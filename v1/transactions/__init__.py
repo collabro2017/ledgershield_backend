@@ -1,0 +1,1 @@
+default_app_config = 'v1.transactions.apps.TransactionsConfig'

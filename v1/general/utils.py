@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def coins_image_upload_to(instance, filename):
-    return "coins/{}-{}".format(datetime.now().timestamp(), filename)
+    return "coins/{}".format(filename)
 
 def transaction_status_choices():
     return (

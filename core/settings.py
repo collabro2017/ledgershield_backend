@@ -46,13 +46,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'corsheaders'
+    'rest_framework_swagger',
+    'corsheaders',
+    'django_celery_results',
+
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -134,3 +137,24 @@ MEDIA_ROOT = join(os.path.dirname(BASE_DIR), 'media')
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL ='accounts.User'
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+)
+CORS_ORIGIN_REGEX_WHITELIST = (
+    'localhost:3000',
+)
+
+SWAGGER_SETTINGS = {
+    'APIS_SORTER': 'method',
+    'JSON_EDITOR': True,
+    'DOC_EXPANSION': True
+}
+
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_BROKER_URL = 'amqp://user:password@172.17.0.3:5672/'

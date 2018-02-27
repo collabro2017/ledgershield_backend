@@ -1,13 +1,14 @@
 from django.db import models
 
 from v1.coins.models import Coin
-from v1.general.models import TimedModel
 from v1.general import utils as apputils
+from v1.general.models import TimedModel
+
 
 class Transaction(TimedModel):
 
     deposit = models.ForeignKey(Coin, related_name="deposit_coin", on_delete=models.CASCADE)
-    wallet_address = models.CharField(max_length=255)
+    wallet_address = models.CharField(max_length=255, null=True)
     rollback_wallet = models.CharField(max_length=255)
     withdraw = models.ForeignKey(Coin, related_name="withdrawl_coin", on_delete=models.CASCADE)
     withdrawl_address = models.CharField(max_length=255)
@@ -18,3 +19,8 @@ class Transaction(TimedModel):
 
     class Meta:
         app_label = "transactions"
+
+
+    def save(self, *args, **kwargs):
+        super(Transaction, self).save(*args, **kwargs)
+
