@@ -12,6 +12,9 @@ class Http:
         r = requests.put(url, self.__tojson(data), auth=auth)
         return (r.status_code, self.__toObject(r.text))
 
+    def post(self, url, data, auth):
+        r = requests.post(url, self.__tojson(data), auth=auth)
+        return (r.status_code, self.__toObject(r.text))
 
     def __toObject(self, str):
         return json.loads(str)

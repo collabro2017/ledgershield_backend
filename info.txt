@@ -1,0 +1,10 @@
+for windows
+celery -A your_app_name worker --pool=solo -l info
+
+ledgershield
+ledger_shield_masteruser
+HmsXCukCE2#-d[5J
+
+
+docker run --name ls-redis -p6379:6379 -d redis
+docker run -d --hostname ls-rabbit --name ls-rabbit -e RABBIT_DEFAULT_USER=user -e RABBIT-DEFAULT-PASS=password -p 25672:25672 -p 4369:4369 -p 5671:5671 -p 5672:5672 rabbitmq

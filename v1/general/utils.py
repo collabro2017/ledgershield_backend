@@ -9,6 +9,7 @@ def transaction_status_choices():
         ('submitted','Submitted'),
         ('awaiting','Wating for deposit'),
         ('deposit_received','Deposit transaction received'),
+        ('waiting_for_confirmation', 'Wating for transaction confirmation'),
         ('exchange', 'Exchanging'),
         ('out_order','Out of order'),
         ('completed', 'Completed')

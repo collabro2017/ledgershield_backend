@@ -7,13 +7,11 @@ class Coin(TimedModel):
     name = models.CharField(db_index=True, unique=True, max_length=50)
     symbol = models.CharField(db_index=True, unique=True, max_length=30)
     image = models.ImageField(upload_to=apputils.coins_image_upload_to, null=True)
-    api_url = models.URLField()
-    api_auth = models.BooleanField(default=True)
-    api_username = models.CharField(max_length=32)
-    api_password = models.CharField(max_length=64)
-    deposit_endpoint = models.CharField(max_length=255)
-    withdraw_endpoint = models.CharField(max_length=255)
     operational = models.BooleanField(default=False)
+    price_btc = models.DecimalField(decimal_places=18, max_digits=24, default=0)
 
     def __str__(self):
         return self.name
+
+    def get(self):
+        return self;

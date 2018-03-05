@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 
     'rest_framework',
     'rest_framework_swagger',
@@ -51,6 +52,9 @@ INSTALLED_APPS = [
     'django_celery_results',
 
 ]
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -130,10 +134,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_ROOT = join(os.path.dirname(BASE_DIR), 'staticfiles')
+STATIC_ROOT = join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = join(os.path.dirname(BASE_DIR), 'media')
+MEDIA_ROOT = join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL ='accounts.User'
@@ -157,4 +161,22 @@ SWAGGER_SETTINGS = {
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://user:password@172.17.0.3:5672/'
+CELERY_BROKER_URL = 'amqp://user:password@127.0.0.1:5672'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
+
+CHANNEL_LAYERS = {
+   "default": {
+       "BACKEND": "channels_redis.core.RedisChannelLayer",  # use redis backend
+       "CONFIG": {
+           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
+       }
+   },
+}
+
+ASGI_APPLICATION = 'core.routing.application'
+
