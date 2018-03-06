@@ -21,7 +21,7 @@ from django.urls import path, include
 from django.conf import settings
 
 from rest_framework_swagger.views import get_swagger_view
-schema_view = get_swagger_view(title='Ledger Shield API')
+schema_view = get_swagger_view(title='Ledger Shield API', url='/api/')
 
 urlpatterns = [
     path('v1/', include('v1.urls')),
