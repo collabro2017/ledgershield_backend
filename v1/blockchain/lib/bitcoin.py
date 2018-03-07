@@ -66,8 +66,18 @@ class Bitcoin(Http):
         endpoint = "wallet/{}/tx/{}".format(self.WALLETID, txhash)
         return self.get(endpoint)
 
+    def sendTransaction(self, data):
+        data['passphrase'] = self.PASSPHRASE
+        endpoint = 'wallet/{}/send'.format(self.WALLETID)
+        return self.post(endpoint, data)
+
     def rpc(self, data):
         url = self.buildUrl('')
+        auth = self.getAuthObject()
+        return super().post(url, data, auth)
+
+    def post(self, endpoint , data):
+        url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
         return super().post(url, data, auth)
 

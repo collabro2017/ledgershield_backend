@@ -11,18 +11,18 @@ class TransactionAdmin(admin.ModelAdmin):
                     'withdraw',
                     'status',
                     'note')
-    readonly_fields = ('order_id',
-                       'status',
-                       'deposit',
-                       'wallet_address',
-                       'rollback_wallet',
-                       'withdraw',
-                       'withdrawl_address',
-                       'exchange_rate',
-                       'deposit_tx_hash',
-                       'deposit_tx_amount',
-                       'deposit_tx_confirmations'
-                       )
+    # readonly_fields = ('order_id',
+    #                    'status',
+    #                    'deposit',
+    #                    'wallet_address',
+    #                    'rollback_wallet',
+    #                    'withdraw',
+    #                    'withdrawl_address',
+    #                    'exchange_rate',
+    #                    'deposit_tx_hash',
+    #                    'deposit_tx_amount',
+    #                    'deposit_tx_confirmations'
+    #                    )
 
 
 admin.site.register(Transaction, TransactionAdmin)

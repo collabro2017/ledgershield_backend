@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from v1.blockchain.lib.bitcoin import Bitcoin
+from v1.blockchain.refund import Refund
 from v1.transactions.models import Transaction
 from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer
 from v1.transactions.tasks import getExchangeRate
@@ -25,20 +26,23 @@ class TestTask(views.APIView):
 
     def get(self, request, *args, **kwargs):
         txid = kwargs['txid'];
-        tx = Transaction.objects.get(pk=txid)
+        # tx = Transaction.objects.get(pk=txid)
         # wait_for_deposit.delay(txid)
 
         # d.append(Bitcoin().getWallet())
         # st, data = Bitcoin().getTxByHash(tx.deposit_tx_hash)
         # d = data
-        st, data = Bitcoin().getWalletTxDetail(tx.deposit_tx_hash)
+        # st, data = Bitcoin().getWalletTxDetail(tx.deposit_tx_hash)
         # st, data = Bitcoin().getTxOut([tx.deposit_tx_hash, tx.deposit_tx_index])
         # get_deposit_address.delay(txid)
-        getExchangeRate.delay(txid)
+        # getExchangeRate.delay(txid)
         # channel_name = 'txchannel-{}'.format(tx.order_id)
         # chanel_layer = get_channel_layer()
         # async_to_sync(chanel_layer.group_send)(channel_name, {
         #     'type': 'update.txinfo',
         #     'text': txid
         # })
+
+        refund = Refund()
+        data = refund.Bitcoin(txid)
         return Response({'data': data}, status=status.HTTP_200_OK)
