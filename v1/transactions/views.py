@@ -4,11 +4,10 @@ from rest_framework import viewsets, generics, views, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from v1.blockchain.lib.bitcoin import Bitcoin
-from v1.blockchain.refund import Refund
 from v1.transactions.models import Transaction
 from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer
-from v1.transactions.tasks import getExchangeRate
+from v1.transactions.tasks import wait_for_deposit
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
@@ -26,7 +25,7 @@ class TestTask(views.APIView):
 
     def get(self, request, *args, **kwargs):
         txid = kwargs['txid'];
-        # tx = Transaction.objects.get(pk=txid)
+        tx = Transaction.objects.get(pk=txid)
         # wait_for_deposit.delay(txid)
 
         # d.append(Bitcoin().getWallet())
@@ -36,13 +35,17 @@ class TestTask(views.APIView):
         # st, data = Bitcoin().getTxOut([tx.deposit_tx_hash, tx.deposit_tx_index])
         # get_deposit_address.delay(txid)
         # getExchangeRate.delay(txid)
-        # channel_name = 'txchannel-{}'.format(tx.order_id)
-        # chanel_layer = get_channel_layer()
-        # async_to_sync(chanel_layer.group_send)(channel_name, {
-        #     'type': 'update.txinfo',
-        #     'text': txid
-        # })
+        channel_name = 'txchannel-{}'.format(tx.order_id)
+        chanel_layer = get_channel_layer()
+        async_to_sync(chanel_layer.group_send)(channel_name, {
+            'type': 'update.txinfo',
+            'text': txid
+        })
 
-        refund = Refund()
-        data = refund.Bitcoin(txid)
-        return Response({'data': data}, status=status.HTTP_200_OK)
+        # refund = Refund()
+        # data = refund.Bitcoin(txid)
+        wait_for_deposit.delay(txid)
+        data = TransactionDetailSerializer(tx)
+        # print(data.data)
+
+        return Response({'data': data.data}, status=status.HTTP_200_OK)

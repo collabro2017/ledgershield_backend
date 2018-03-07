@@ -26,6 +26,12 @@ def wait_for_deposit(txid):
             tx.deposit_tx_hash = data[0]['hash']
             tx.status = 'waiting_for_confirmation'
             tx.save()
+            channel_name = 'txchannel-{}'.format(tx.order_id)
+            chanel_layer = get_channel_layer()
+            async_to_sync(chanel_layer.group_send)(channel_name, {
+                'type': 'update.txinfo',
+                'text': txid
+            })
             watch_tx_confirmation.delay(txid)
 
 
@@ -107,13 +113,13 @@ def getExchangeRate(txid):
     cp = CoinPair.objects.get(source=tx.deposit, destination=tx.withdraw)
 
     # cp.rate
-    logger.info("Got Exhcnage Rate {}, service fee {}%".format(cp.rate, tx.deposit.fee))
+    logger.info("Got Exhcnage Rate {}, service fee {}%".format(cp.rate, tx.deposit.service_fee))
 
     last_unit = tx.deposit_tx_amount / int(tx.deposit.decimals)
 
     logger.info("Converted in max unit {} and type {}".format(last_unit, type(last_unit)))
 
-    fee = (last_unit  * tx.deposit.fee) / 100;
+    fee = (last_unit  * tx.deposit.service_fee) / 100;
 
     exchange_amount = last_unit - fee;
 
@@ -125,3 +131,10 @@ def getExchangeRate(txid):
 
     tx.exchange_rate = cp.rate;
     tx.save()
+
+    channel_name = 'txchannel-{}'.format(tx.order_id)
+    chanel_layer = get_channel_layer()
+    async_to_sync(chanel_layer.group_send)(channel_name, {
+        'type': 'update.txinfo',
+        'text': txid
+    })

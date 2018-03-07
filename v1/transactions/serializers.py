@@ -17,8 +17,10 @@ class TransactionSerializer(serializers.ModelSerializer):
                   'rollback_wallet',
                   'withdraw',
                   'withdrawl_address',
-                  'note')
-        read_only_fields = ('wallet_address', 'order_id','deposit_tx_hash','deposit_tx_amount')
+                  'exchange_rate',
+                  'note'
+                  )
+        read_only_fields = ('wallet_address', 'order_id','deposit_tx_hash','deposit_tx_amount','exchange_rate')
 
 class TransactionDetailSerializer(serializers.ModelSerializer):
     deposit = CoinSerializer(read_only=True)
@@ -37,5 +39,6 @@ class TransactionDetailSerializer(serializers.ModelSerializer):
                   'rollback_wallet',
                   'withdraw',
                   'withdrawl_address',
+                  'exchange_rate',
                   'note')
-        read_only_fields = ('wallet_address', 'order_id','deposit_tx_hash','deposit_tx_amount','deposit_tx_confirmations')
+        read_only_fields = ('wallet_address', 'order_id','deposit_tx_hash','deposit_tx_amount','deposit_tx_confirmations','exchange_rate')

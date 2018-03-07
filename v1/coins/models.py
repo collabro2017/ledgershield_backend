@@ -8,8 +8,9 @@ class Coin(TimedModel):
     symbol = models.CharField(db_index=True, unique=True, max_length=30)
     image = models.ImageField(upload_to=apputils.coins_image_upload_to, null=True)
     operational = models.BooleanField(default=False)
-    fee = models.FloatField(default=0)
+    service_fee = models.FloatField(default=0)
     decimals = models.PositiveIntegerField(default=0)
+    fee_per_kb = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
