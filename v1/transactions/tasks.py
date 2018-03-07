@@ -3,6 +3,7 @@ from celery.task import task
 from channels.layers import get_channel_layer
 
 from v1.blockchain.utils import Utils
+from v1.coins.models import CoinPair
 from v1.transactions.models import Transaction
 import logging
 import time
@@ -59,6 +60,8 @@ def watch_tx_confirmation(txid, confirmations=0):
                 'type': 'update.txinfo',
                 'text': txid
             })
+
+            getExchangeRate.delay(txid)
         else:
             # TODO read retyr time from configuration specific to coin.
             time.sleep(60)
@@ -93,3 +96,32 @@ def get_deposit_address(txid):
         wait_for_deposit.delay(tx.pk)
     else:
         logger.warning("Something went wrong while generating deposit address!")
+
+@task()
+def getExchangeRate(txid):
+
+    logger = logging.getLogger(__name__)
+
+    tx = Transaction.objects.get(pk=txid)
+
+    cp = CoinPair.objects.get(source=tx.deposit, destination=tx.withdraw)
+
+    # cp.rate
+    logger.info("Got Exhcnage Rate {}, service fee {}%".format(cp.rate, tx.deposit.fee))
+
+    last_unit = tx.deposit_tx_amount / int(tx.deposit.decimals)
+
+    logger.info("Converted in max unit {} and type {}".format(last_unit, type(last_unit)))
+
+    fee = (last_unit  * tx.deposit.fee) / 100;
+
+    exchange_amount = last_unit - fee;
+
+    logger.info("Deducted Fee {}, Exchange {} amount {}".format(fee, tx.deposit.symbol, exchange_amount))
+
+    dest_amount = exchange_amount * cp.rate
+
+    logger.info("User will get {} {}".format(dest_amount, tx.withdraw.symbol))
+
+    tx.exchange_rate = cp.rate;
+    tx.save()

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from v1.blockchain.lib.bitcoin import Bitcoin
 from v1.transactions.models import Transaction
 from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer
-from v1.transactions.tasks import watch_tx_confirmation
+from v1.transactions.tasks import getExchangeRate
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
@@ -34,7 +34,7 @@ class TestTask(views.APIView):
         st, data = Bitcoin().getWalletTxDetail(tx.deposit_tx_hash)
         # st, data = Bitcoin().getTxOut([tx.deposit_tx_hash, tx.deposit_tx_index])
         # get_deposit_address.delay(txid)
-        watch_tx_confirmation.delay(txid)
+        getExchangeRate.delay(txid)
         # channel_name = 'txchannel-{}'.format(tx.order_id)
         # chanel_layer = get_channel_layer()
         # async_to_sync(chanel_layer.group_send)(channel_name, {
