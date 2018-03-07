@@ -8,10 +8,19 @@ class Coin(TimedModel):
     symbol = models.CharField(db_index=True, unique=True, max_length=30)
     image = models.ImageField(upload_to=apputils.coins_image_upload_to, null=True)
     operational = models.BooleanField(default=False)
-    price_btc = models.DecimalField(decimal_places=18, max_digits=24, default=0)
+    fee = models.FloatField(default=0)
+    decimals = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
 
     def get(self):
         return self;
+
+class CoinPair(TimedModel):
+    source = models.ForeignKey(Coin, related_name="source_coin", on_delete=models.CASCADE)
+    destination = models.ForeignKey(Coin, related_name="destination_coin", on_delete=models.CASCADE)
+    rate = models.FloatField()
+
+    class Meta:
+        ordering = ['-date_modified']
