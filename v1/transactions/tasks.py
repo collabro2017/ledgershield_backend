@@ -5,6 +5,8 @@ from channels.layers import get_channel_layer
 from v1.blockchain.utils import Utils
 from v1.coins.models import CoinPair
 from v1.transactions.models import Transaction
+from v1.blockchain.transfer import Transfer
+
 import logging
 import time
 
@@ -129,7 +131,9 @@ def getExchangeRate(txid):
 
     logger.info("User will get {} {}".format(dest_amount, tx.withdraw.symbol))
 
-    tx.exchange_rate = cp.rate;
+    tx.exchange_rate = cp.rate
+    tx.withdraw_amount = dest_amount
+    tx.status = 'exchange'
     tx.save()
 
     channel_name = 'txchannel-{}'.format(tx.order_id)
@@ -138,3 +142,27 @@ def getExchangeRate(txid):
         'type': 'update.txinfo',
         'text': txid
     })
+
+
+def transfer_exchanged_amount(txid):
+
+    tx = Transaction.objects.get(pk=txid)
+    txhash = Transfer.ETH(tx.withdrawl_address, tx.withdraw_amount)
+
+    if txhash is not None :
+        tx.withdraw_tx_hash = txhash
+        tx.status = 'completed'
+        tx.save()
+    else:
+        tx.status = 'out_order'
+        tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
+        tx.save()
+
+    channel_name = 'txchannel-{}'.format(tx.order_id)
+    chanel_layer = get_channel_layer()
+    async_to_sync(chanel_layer.group_send)(channel_name, {
+        'type': 'update.txinfo',
+        'text': txid
+    })
+
+

@@ -19,7 +19,9 @@ class Transaction(TimedModel):
     deposit_tx_confirmations = models.PositiveIntegerField(default=0)
     status = models.CharField(choices=apputils.transaction_status_choices(), max_length=100, db_index=True, default='submitted')
     note = models.TextField(max_length=255, null=True)
-    exchange_rate = models.DecimalField(max_digits=20, decimal_places=8, default=0)
+    exchange_rate = models.FloatField(default=0)
+    withdraw_amount = models.FloatField(default=0)
+    withdraw_tx_hash = models.CharField(max_length=255, null=True)
 
     class Meta:
         app_label = "transactions"

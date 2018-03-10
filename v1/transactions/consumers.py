@@ -6,7 +6,6 @@ from v1.transactions.serializers import TransactionDetailSerializer
 
 
 class TransactionConsumer(AsyncJsonWebsocketConsumer):
-
     async def connect(self):
         await self.accept()
         self.txid = self.scope['url_route']['kwargs']['txid']
