@@ -7,7 +7,7 @@ class Ethereum(Http):
 
 
     def transfer(self, to , amount):
-        endpoint = '{}/{}'.format(to,amount)
+        endpoint = 'wallet/transfer/{}/{}'.format(to,amount)
         return self.get(endpoint)
 
     def buildUrl(self, endpoint):
