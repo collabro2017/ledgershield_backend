@@ -3,7 +3,7 @@ from .http import Http
 class Ethereum(Http):
 
     def __init__(self):
-        self.URL = 'http://localhost:5000'
+        self.URL = 'http://13.58.248.113/ethapi'
 
 
     def transfer(self, to , amount):
@@ -15,4 +15,5 @@ class Ethereum(Http):
 
     def get(self, endpoint):
         url = self.buildUrl(endpoint)
+
         return super().get(url, None)

@@ -45,9 +45,9 @@ class TestTask(views.APIView):
         # # refund = Refund()
         # # data = refund.Bitcoin(txid)
         # wait_for_deposit.delay(txid)
-        # data = TransactionDetailSerializer(tx)
-        # print(data.data)
+        data = TransactionDetailSerializer(tx)
+        print(data.data)
 
-        s, data = watch_tx_confirmation.delay(txid)
+        watch_tx_confirmation.delay(txid)
 
-        return Response({'data': data}, status=status.HTTP_200_OK)
+        return Response({'data': data.data}, status=status.HTTP_200_OK)
