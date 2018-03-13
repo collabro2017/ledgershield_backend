@@ -5,12 +5,8 @@ from v1.coins.models import Coin, CoinPair
 
 
 class CoinAdmin(admin.ModelAdmin):
-
     list_display = ('name','symbol','service_fee','operational', 'decimals' ,'date_modified')
-    readonly_fields = ('service_fee',)
-    def service_fee(self, obj):
-        return '{}%'.format(obj.fee)
-    service_fee.short_description = 'Service Fee (%)'
+
 
 class CoinPairAdmin(admin.ModelAdmin):
     list_display = ('source', 'destination', 'dst_rate', 'date_modified')
