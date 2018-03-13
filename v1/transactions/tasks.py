@@ -128,7 +128,10 @@ def getExchangeRate(txid):
         # cp.rate
         logger.info("Got Exhcnage Rate {}, service fee {}%".format(cp.rate, tx.deposit.service_fee))
 
-        last_unit = tx.deposit_tx_amount / int(tx.deposit.decimals)
+        tx_deposit_decimals = int(tx.deposit.decimals)
+        last_unit = 1;
+        if tx_deposit_decimals > 0:
+            last_unit = tx.deposit_tx_amount / int(tx.deposit.decimals)
 
         logger.info("Converted in max unit {} and type {}".format(last_unit, type(last_unit)))
 
