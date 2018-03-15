@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from v1.transactions.models import Transaction
 from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer
-from v1.transactions.tasks import wait_for_deposit, watch_tx_confirmation
+from v1.transactions.tasks import wait_for_deposit, watch_tx_confirmation, get_deposit_address
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -46,8 +46,8 @@ class TestTask(views.APIView):
         # # data = refund.Bitcoin(txid)
         # wait_for_deposit.delay(txid)
         data = TransactionDetailSerializer(tx)
-        print(data.data)
+        # print(data.data)
 
-        watch_tx_confirmation.delay(txid)
+        get_deposit_address.delay(txid)
 
         return Response({'data': data.data}, status=status.HTTP_200_OK)

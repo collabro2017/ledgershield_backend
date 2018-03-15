@@ -161,25 +161,27 @@ def getExchangeRate(txid):
 
 @task()
 def transfer_exchanged_amount(txid):
-
-    tx = Transaction.objects.get(pk=txid)
-    if tx.status == 'exchange':
-        txhash = Transfer.ETH(tx.withdrawl_address, tx.withdraw_amount)
-
-        if txhash is not None :
-            tx.withdraw_tx_hash = txhash
-            tx.status = 'completed'
-            tx.save()
-        else:
-            tx.status = 'out_order'
-            tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
-            tx.save()
-
-        channel_name = 'txchannel-{}'.format(tx.order_id)
-        chanel_layer = get_channel_layer()
-        async_to_sync(chanel_layer.group_send)(channel_name, {
-            'type': 'update.txinfo',
-            'text': txid
-        })
+    pass
+    # tx = Transaction.objects.get(pk=txid)
+    # if tx.status == 'exchange':
+    #
+    #
+    #     txhash = Transfer.ETH(tx.withdrawl_address, tx.withdraw_amount)
+    #
+    #     if txhash is not None :
+    #         tx.withdraw_tx_hash = txhash
+    #         tx.status = 'completed'
+    #         tx.save()
+    #     else:
+    #         tx.status = 'out_order'
+    #         tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
+    #         tx.save()
+    #
+    #     channel_name = 'txchannel-{}'.format(tx.order_id)
+    #     chanel_layer = get_channel_layer()
+    #     async_to_sync(chanel_layer.group_send)(channel_name, {
+    #         'type': 'update.txinfo',
+    #         'text': txid
+    #     })
 
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from v1.transactions.models import Transaction
+from v1.transactions.models import Transaction, TransactionOutputs
 
 
 class TransactionAdmin(admin.ModelAdmin):
@@ -25,4 +25,10 @@ class TransactionAdmin(admin.ModelAdmin):
     #                    )
 
 
+
 admin.site.register(Transaction, TransactionAdmin)
+
+class TransactionOutputAdmin(admin.ModelAdmin):
+    list_display = ('address','value')
+
+admin.site.register(TransactionOutputs, TransactionOutputAdmin)
