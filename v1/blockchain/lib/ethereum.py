@@ -4,7 +4,7 @@ from .http import Http
 class Ethereum(Http):
 
     def __init__(self):
-        self.URL = 'http://127.0.0.1:8000'
+        self.URL = 'http://13.58.248.113/ethapi'
 
     def getAccount(self):
         endpoint = 'wallet/new'
