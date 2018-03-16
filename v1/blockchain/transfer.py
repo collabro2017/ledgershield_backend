@@ -5,15 +5,13 @@ from v1.blockchain.lib.ethereum import Ethereum
 class Transfer:
 
     @staticmethod
-    def ETH(to, amount):
+    def ETH(txid):
 
         logger = logging.getLogger(__name__)
-        logger.info("Transfering {} ETH to address {}".format(amount, to))
 
-        status, data = Ethereum().transfer(to, amount)
-
+        status, data = Ethereum().transfer(txid)
         if status == 200:
-            logger.info("Txid {}".format(data['txid']))
-            return data['txid']
+            logger.info("Txid {}".format(data['data']))
+            return data['data']
         else:
             return None

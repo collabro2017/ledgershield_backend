@@ -17,7 +17,7 @@ def wait_for_deposit(txid):
     if tx.status == 'awaiting':
         address = tx.wallet_address
         coin = tx.deposit.symbol
-        logger.info("Waiting for {} deposit for address {}".format( coin ,address))
+        logger.info("Waiting for {} deposit for address {} tx {}".format( coin ,address, txid))
         data, run = Utils.getWalletTransaction(address, coin)
         if run:
             logger.info("retry within 5 seconds!")
@@ -98,7 +98,7 @@ def get_deposit_address(txid):
         dst = tx.withdraw.symbol;
         account_name = "{}-{}-{}".format(src, dst,tx.id);
         name, address = Utils.getDespositAddress(src, account_name)
-        logger.debug("Got Address {} and accountname {}".format(address, account_name))
+        logger.info("Got Address {} and accountname {}".format(address, account_name))
         if address is not None:
             tx.status  = 'awaiting'
             tx.wallet_address = address;
@@ -161,9 +161,15 @@ def getExchangeRate(txid):
 
 @task()
 def transfer_exchanged_amount(txid):
-    pass
-    # tx = Transaction.objects.get(pk=txid)
-    # if tx.status == 'exchange':
+     tx = Transaction.objects.get(pk=txid)
+     data = Transfer.ETH(txid)
+     if tx.status == 'exchange':
+         tx.status = 'completed'
+         tx.outs.set(data)
+         tx.save()
+     else:
+         pass
+
     #
     #
     #     txhash = Transfer.ETH(tx.withdrawl_address, tx.withdraw_amount)

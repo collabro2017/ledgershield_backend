@@ -8,7 +8,7 @@ class Http:
         return logging.getLogger(__name__)
 
     def get(self, url, auth):
-        self.getLogger().info('URL {}'.format(url))
+        # self.getLogger().info('URL {}'.format(url))
         r = requests.get(url, auth= auth)
         return (r.status_code, self.__toObject(r.text))
 
@@ -22,7 +22,7 @@ class Http:
         return (r.status_code, self.__toObject(r.text))
 
     def __toObject(self, str):
-        self.getLogger().info('{}'.format(str))
+        # self.getLogger().info('{}'.format(str))
         return json.loads(str)
 
     def __tojson(self, obj):

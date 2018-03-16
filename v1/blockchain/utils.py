@@ -3,6 +3,9 @@ from datetime import datetime
 from v1.blockchain.lib.bitcoin import Bitcoin
 import logging
 
+from v1.blockchain.lib.ethereum import Ethereum
+
+
 class Utils:
     @staticmethod
     def getDespositAddress(coin, accountname):
@@ -16,6 +19,11 @@ class Utils:
             if status == 200:
                 logger.info(response)
                 return (response['name'], response['nestedAddress'])
+        elif coin.lower() == 'eth':
+            status, response = Ethereum().getAccount()
+            if status == 200:
+                return (None, response['address'])
+
 
         return (accountname, None)
 

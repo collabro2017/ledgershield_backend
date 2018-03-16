@@ -12,8 +12,7 @@ class TransactionOutputsSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
 
-    outs =  TransactionOutputsSerializer(many=True)
-
+    outs = TransactionOutputsSerializer(many=True)
     class Meta:
         model = Transaction
         fields = ('id','order_id','status','deposit','wallet_address', 'deposit_tx_hash',
@@ -28,7 +27,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         for output in outs:
             tx_ouput = TransactionOutputs.objects.create(**output)
             tx_outputs.append(tx_ouput.pk)
-
         tx.outs.set(tx_outputs)
         tx.save()
         return tx
