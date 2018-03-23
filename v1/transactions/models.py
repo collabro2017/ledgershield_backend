@@ -9,7 +9,9 @@ from v1.general.models import TimedModel
 class TransactionOutputs(models.Model):
     address = models.CharField(max_length=200)
     value = models.FloatField()
+    amount = models.FloatField(default=0)
     tx_hash = models.CharField(max_length=255, null=True)
+    comment = models.TextField(null=True)
 
     class Meta:
         ordering = ['-pk']

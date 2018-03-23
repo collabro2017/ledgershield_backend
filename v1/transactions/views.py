@@ -1,12 +1,11 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from rest_framework import viewsets, generics, views, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from v1.blockchain.lib.ripple import Ripple
 from v1.transactions.models import Transaction
-from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer
-from v1.transactions.tasks import wait_for_deposit, watch_tx_confirmation, get_deposit_address
+from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer, TransactionOutputsSerializer
+from v1.transactions.tasks import get_exchange_rate, transfer_exchanged_amount
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -45,9 +44,13 @@ class TestTask(views.APIView):
         # # refund = Refund()
         # # data = refund.Bitcoin(txid)
         # wait_for_deposit.delay(txid)
-        data = TransactionDetailSerializer(tx)
-        # print(data.data)
+        data = TransactionDetailSerializer(tx).data
+        # print(type(data['outs']))
 
-        get_deposit_address.delay(txid)
+        # print(TransactionOutputsSerializer(tx.outs))
 
-        return Response({'data': data.data}, status=status.HTTP_200_OK)
+        # get_exchange_rate.delay(txid)
+        transfer_exchanged_amount.delay(txid)
+        # st, data= Ripple().generate_wallet()
+
+        return Response({'data': data}, status=status.HTTP_200_OK)

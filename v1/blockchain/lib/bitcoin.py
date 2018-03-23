@@ -5,8 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class Bitcoin(Http):
 
+class Bitcoin(Http):
     def __init__(self):
         self.URL = 'http://18.222.5.20:18332'
         self.APIKEY = '220b6e10-17df-11e8-b642-0ed5f89f718b'
@@ -24,7 +24,6 @@ class Bitcoin(Http):
             logger.warning("WalletID {} doesn't exists, trying to create new wallet!".format(self.WALLETID))
             status, response = self.createWallet()
         return response;
-
 
     def createWallet(self):
         endpoint = 'wallet/{}'.format(self.WALLETID)
@@ -49,7 +48,7 @@ class Bitcoin(Http):
         return self.get(endpoint)
 
     def getTxByAddress(self, address):
-        endpoint ='tx/address/{}'.format(address)
+        endpoint = 'tx/address/{}'.format(address)
         return self.get(endpoint)
 
     def getTxByHash(self, hash):
@@ -60,7 +59,7 @@ class Bitcoin(Http):
         return requests.auth.HTTPBasicAuth('x', self.APIKEY)
 
     def buildUrl(self, endpoint):
-        return "{}/{}".format(self.URL, endpoint )
+        return "{}/{}".format(self.URL, endpoint)
 
     def getWalletTxDetail(self, txhash):
         endpoint = "wallet/{}/tx/{}".format(self.WALLETID, txhash)
@@ -76,7 +75,7 @@ class Bitcoin(Http):
         auth = self.getAuthObject()
         return super().post(url, data, auth)
 
-    def post(self, endpoint , data):
+    def post(self, endpoint, data):
         url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
         return super().post(url, data, auth)
@@ -90,3 +89,16 @@ class Bitcoin(Http):
         url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
         return super().put(url, auth, data)
+
+    @staticmethod
+    def normalize_tx(data, address):
+        if len(data) > 0:
+            if 'hash' in data[0]:
+                hash = data['hash']
+                amount = 0;
+                for out in data[0]['outputs']:
+                    if out['address'] == address:
+                        amount = out['value']
+                        break
+                return hash, amount
+        return None, None

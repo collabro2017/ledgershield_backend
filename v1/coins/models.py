@@ -18,10 +18,13 @@ class Coin(TimedModel):
     def get(self):
         return self;
 
+    class Meta:
+        ordering = ['-operational']
+
 class CoinPair(TimedModel):
     source = models.ForeignKey(Coin, related_name="source_coin", on_delete=models.CASCADE)
     destination = models.ForeignKey(Coin, related_name="destination_coin", on_delete=models.CASCADE)
     rate = models.FloatField()
 
     class Meta:
-        ordering = ['-date_modified']
+        ordering = ['source__symbol']

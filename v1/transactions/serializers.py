@@ -7,7 +7,7 @@ class TransactionOutputsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= TransactionOutputs
-        fields = ('address', 'value', 'tx_hash')
+        fields = ('id','address', 'value', 'amount', 'tx_hash')
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -45,3 +45,11 @@ class TransactionDetailSerializer(serializers.ModelSerializer):
                   )
         read_only_fields = ('wallet_address', 'order_id', 'deposit_tx_hash', 'deposit_tx_amount', 'deposit_tx_confirmations',
                             'exchange_rate', 'date_modified', 'date_created')
+
+
+class TransactionOutsSerializer(serializers.ModelSerializer):
+    outs = TransactionOutputsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Transaction
+        fields = ('outs',)

@@ -29,6 +29,6 @@ class TransactionAdmin(admin.ModelAdmin):
 admin.site.register(Transaction, TransactionAdmin)
 
 class TransactionOutputAdmin(admin.ModelAdmin):
-    list_display = ('address','value')
+    list_display = ('pk','address','value', 'amount', 'tx_hash')
 
 admin.site.register(TransactionOutputs, TransactionOutputAdmin)
