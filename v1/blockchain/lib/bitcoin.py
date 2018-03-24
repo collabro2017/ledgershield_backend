@@ -15,11 +15,11 @@ class Bitcoin(Http):
         self.NETWORK = 'testnet'
 
     def getNodeInfo(self):
-        return self.get('/')
+        return self.callget('/')
 
     def getWallet(self):
         endpoint = 'wallet/{}'.format(self.WALLETID)
-        status, response = self.get(endpoint)
+        status, response = self.callget(endpoint)
         if status == 404:
             logger.warning("WalletID {} doesn't exists, trying to create new wallet!".format(self.WALLETID))
             status, response = self.createWallet()
@@ -31,7 +31,7 @@ class Bitcoin(Http):
             'passphrase': self.PASSPHRASE,
             'witness': True
         }
-        return self.put(endpoint, data)
+        return self.callput(endpoint, data)
 
     def createAccount(self, accountname):
         endpoint = 'wallet/{}/account/{}'.format(self.WALLETID, accountname)
@@ -41,19 +41,19 @@ class Bitcoin(Http):
             'witness': True,
             'network': self.NETWORK
         }
-        return self.put(endpoint, data)
+        return self.callput(endpoint, data)
 
     def getAccount(self, accountname):
         endpoint = 'wallet/{}/account/{}'.format(self.WALLETID, accountname)
-        return self.get(endpoint)
+        return self.callget(endpoint)
 
     def getTxByAddress(self, address):
         endpoint = 'tx/address/{}'.format(address)
-        return self.get(endpoint)
+        return self.callget(endpoint)
 
     def getTxByHash(self, hash):
         endpoint = 'tx/{}'.format(hash)
-        return self.get(endpoint)
+        return self.callget(endpoint)
 
     def getAuthObject(self):
         return requests.auth.HTTPBasicAuth('x', self.APIKEY)
@@ -63,7 +63,7 @@ class Bitcoin(Http):
 
     def getWalletTxDetail(self, txhash):
         endpoint = "wallet/{}/tx/{}".format(self.WALLETID, txhash)
-        return self.get(endpoint)
+        return self.callget(endpoint)
 
     def sendTransaction(self, data):
         data['passphrase'] = self.PASSPHRASE
@@ -73,22 +73,22 @@ class Bitcoin(Http):
     def rpc(self, data):
         url = self.buildUrl('')
         auth = self.getAuthObject()
-        return super().post(url, data, auth)
+        return super().callpost(url, data, auth)
 
     def post(self, endpoint, data):
         url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
-        return super().post(url, data, auth)
+        return super().callpost(url, data, auth)
 
-    def get(self, endpoint):
+    def callget(self, endpoint):
         url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
-        return super().get(url, auth)
+        return super().callget(url, auth)
 
-    def put(self, endpoint, data=None):
+    def callput(self, endpoint, data=None):
         url = self.buildUrl(endpoint)
         auth = self.getAuthObject()
-        return super().put(url, auth, data)
+        return super().callput(url, auth, data)
 
     @staticmethod
     def normalize_tx(data, address):

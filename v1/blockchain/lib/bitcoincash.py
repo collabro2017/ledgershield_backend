@@ -12,18 +12,18 @@ class BitcoinCash(http.Http):
 
     def get_balance_by_address(self, address, confirmations=0):
         endpoint = 'wallet/balance/{}/{}'.format(address, confirmations)
-        return self.get(endpoint)
+        return self.callget(endpoint)
 
     def build_url(self, endpoint):
         return '{}/{}'.format(self.base_url, endpoint)
 
     def post(self, endpoint, data=None):
         url = self.build_url(endpoint)
-        return super().post(url, data, auth=None)
+        return super().callpost(url, data, auth=None)
 
-    def get(self, endpoint):
+    def callget(self, endpoint):
         url = self.build_url(endpoint)
-        return super().get(url, auth=None)
+        return super().callget(url, auth=None)
 
     def transfer(self, outs):
         endpoint = 'wallet/transfer'

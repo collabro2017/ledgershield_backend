@@ -163,7 +163,7 @@ class Utils:
         tx_out = TransactionOutsSerializer(tx).data
         outs = Utils.calculate_amount_share(tx_out['outs'], tx.withdraw_amount)
         if coin_name == 'btc':
-            pass
+            return Transfer.BTC(outs)
         elif coin_name == 'eth':
             return Transfer.ETH(outs)
         elif coin_name == 'bch':

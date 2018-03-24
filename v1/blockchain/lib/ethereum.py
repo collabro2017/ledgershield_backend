@@ -24,8 +24,8 @@ class Ethereum(Http):
 
     def get(self, endpoint):
         url = self.buildUrl(endpoint)
-        return super().get(url, None)
+        return super().callget(url, None)
 
     def post(self, endpoint, data):
         url = self.buildUrl(endpoint)
-        return super().post(url, data=data, auth=None)
+        return super().callpost(url, data=data, auth=None)
