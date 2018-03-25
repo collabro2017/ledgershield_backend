@@ -8,13 +8,13 @@ class Ripple(http.Http):
     def build_url(self, endpoint):
         return '{}/{}'.format(self.URL, endpoint)
 
-    def callget(self, endpoint):
+    def get(self, endpoint):
         endpoint = self.build_url(endpoint)
-        return super().__get(endpoint, auth=None)
+        return super().callget(endpoint, auth=None)
 
     def post(self, endpoint, data=None):
         endpoint = self.build_url(endpoint)
-        return super().__post(endpoint, data, auth=None)
+        return super().callpost(endpoint, data, auth=None)
 
     def generate_wallet(self):
         endpoint = 'wallet/new'
@@ -27,4 +27,8 @@ class Ripple(http.Http):
     def get_tx_detail(self, tx_hash):
         endpoint = 'wallet/tx/{}'.format(tx_hash)
         return self.callget(endpoint)
+
+    def transfer(self, outs):
+        endpoint = 'wallet/transfer'
+        return self.post(endpoint, data=outs)
 

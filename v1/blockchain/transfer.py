@@ -3,6 +3,8 @@ import logging
 from v1.blockchain.lib.bitcoin import Bitcoin
 from v1.blockchain.lib.bitcoincash import BitcoinCash
 from v1.blockchain.lib.ethereum import Ethereum
+from v1.blockchain.lib.ripple import Ripple
+
 
 class Transfer:
 
@@ -48,6 +50,16 @@ class Transfer:
     def BCH(outs):
         logger = logging.getLogger(__name__)
         status, data = BitcoinCash().transfer(outs)
+        if status == 200:
+            logger.info("Transfer TX BCH response {}".format(data))
+            return data
+        else:
+            return None
+
+    @staticmethod
+    def XRP(outs):
+        logger = logging.getLogger(__name__)
+        status, data = Ripple().transfer(outs)
         if status == 200:
             logger.info("Transfer TX BCH response {}".format(data))
             return data

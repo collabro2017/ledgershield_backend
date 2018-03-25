@@ -168,5 +168,7 @@ class Utils:
             return Transfer.ETH(outs)
         elif coin_name == 'bch':
             return Transfer.BCH(outs)
+        elif coin_name == 'xrp':
+            return Transfer.XRP(outs)
 
         return None

@@ -7,7 +7,7 @@ class TransactionOutputsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= TransactionOutputs
-        fields = ('id','address', 'value', 'amount', 'tx_hash')
+        fields = ('id','address', 'value', 'amount', 'tx_hash', 'comment')
 
 
 class TransactionSerializer(serializers.ModelSerializer):

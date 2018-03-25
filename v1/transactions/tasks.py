@@ -160,9 +160,17 @@ def transfer_exchanged_amount(txid):
         if data is not None:
             for item in data:
                 tx_out = TransactionOutputs.objects.get(pk=item['id'])
-                tx_out.tx_hash = item['tx_hash']
+                if 'tx_hash' in item:
+                    tx_out.tx_hash = item['tx_hash']
+                else:
+                    tx_out.tx_hash = ''
+
                 tx_out.amount = item['amount']
-                tx_out.comment = item['comment']
+                if 'comment' in item:
+                    tx_out.comment = item['comment']
+                else:
+                    tx_out.comment = ''
+
                 tx_out.save()
                 if not tx_out.tx_hash:
                     status = 'out_order';

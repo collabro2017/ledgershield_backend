@@ -29,7 +29,8 @@ class Http:
         if data is not None:
             data = self.__to_json(data)
 
-        # self.get_logger().info('{} {}'.format( type(data), data))
+        self.get_logger().info('{}'.format(url))
+        self.get_logger().info('{} {}'.format( type(data), data))
         try:
 
             r = requests.post(url=url, data=data, auth=auth, headers=self.get_headers())
@@ -37,7 +38,7 @@ class Http:
             self.get_logger().info('{} retrying in 1 second...'.format(ex))
             time.sleep(1)
             return self.callpost(url, data, auth)
-
+        self.get_logger().info('{} {}'.format(r.status_code, r.text))
         return r.status_code, self.__to_object(r.text)
 
     def get_headers(self):
