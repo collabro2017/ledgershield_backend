@@ -25,6 +25,7 @@ class CoinPair(TimedModel):
     source = models.ForeignKey(Coin, related_name="source_coin", on_delete=models.CASCADE)
     destination = models.ForeignKey(Coin, related_name="destination_coin", on_delete=models.CASCADE)
     rate = models.FloatField()
+    minerFee = models.FloatField(default=0)
 
     class Meta:
         ordering = ['source__symbol']
