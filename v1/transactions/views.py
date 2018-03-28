@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from v1.blockchain.lib.ripple import Ripple
 from v1.transactions.models import Transaction
 from v1.transactions.serializers import TransactionSerializer, TransactionDetailSerializer, TransactionOutputsSerializer
-from v1.transactions.tasks import get_exchange_rate, transfer_exchanged_amount
+from v1.transactions.tasks import get_exchange_rate, transfer_exchanged_amount, wait_for_deposit, \
+    wait_for_tx_confirmation
 from v1.coins.tasks import sync_cp_rates
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -52,5 +53,5 @@ class TestTask(views.APIView):
         # get_exchange_rate.delay(txid)
         # transfer_exchanged_amount.delay(txid)
         # st, data= Ripple().generate_wallet()
-        sync_cp_rates.delay()
+        wait_for_tx_confirmation.delay(txid)
         return Response({'data': data}, status=status.HTTP_200_OK)

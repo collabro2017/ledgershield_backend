@@ -5,7 +5,6 @@ from v1.blockchain.lib.bitcoin import Bitcoin
 class Refund:
 
     def Bitcoin(self, txid):
-
         tx = Transaction.objects.get(pk=txid)
         data = {
             'rate': 1000,
@@ -15,7 +14,6 @@ class Refund:
                 {'address': tx.rollback_wallet, 'value': tx.deposit_tx_amount }
             ]
         }
-
         btc = Bitcoin()
         st, data = btc.sendTransaction(data)
         return data;

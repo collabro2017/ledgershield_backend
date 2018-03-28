@@ -21,6 +21,8 @@ class TransactionConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_discard('txchannel', self.channel_name)
 
     async def update_txinfo(self, event):
+        print(event)
         tx = Transaction.objects.get(pk=event['text'])
         t = TransactionDetailSerializer(tx)
+
         await self.send_json(t.data)

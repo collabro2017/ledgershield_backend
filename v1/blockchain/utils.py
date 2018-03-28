@@ -62,6 +62,7 @@ class Utils:
         if coin_name == 'btc':
             status, data = Bitcoin().getTxByAddress(address)
             if status == 200:
+                logger.info('{}'.format(data))
                 if len(data) == 0:
                     return None, True
                 hash, amount = Bitcoin.normalize_tx(data, address)
@@ -172,3 +173,29 @@ class Utils:
             return Transfer.XRP(outs)
 
         return None
+
+    @staticmethod
+    def get_refund_outputs(tx_outs):
+        outs = []
+        for out in tx_outs:
+            o = dict(out)
+            if not o['tx_hash']:
+                outs.append(o)
+        return outs;
+
+    @staticmethod
+    def refund_remain_amount(tx):
+        coin_name = tx.withdraw.symbol.lower()
+        serialized_tx = TransactionOutsSerializer(tx).data
+        outs = Utils.get_refund_outputs(serialized_tx['outs'])
+
+        if coin_name == 'btc':
+            return Transfer.BTC(outs)
+        elif coin_name == 'eth':
+            return Transfer.ETH(outs)
+        elif coin_name == 'xrp':
+            return Transfer.XRP(outs)
+        elif coin_name == 'bch':
+            return Transfer.BCH(outs)
+
+        return None;

@@ -11,6 +11,9 @@ from v1.transactions.models import Transaction, TransactionOutputs
 
 
 # Step1::Generate Deposit Address
+from v1.transactions.utils import get_pair_rates
+
+
 @task()
 def get_deposit_address(txid):
     logger = logging.getLogger(__name__)
@@ -25,6 +28,7 @@ def get_deposit_address(txid):
         if address is not None:
             tx.status = 'awaiting'
             tx.wallet_address = address;
+            tx.exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             tx.save();
             channel_name = 'txchannel-{}'.format(tx.order_id)
             chanel_layer = get_channel_layer()
@@ -59,6 +63,7 @@ def wait_for_deposit(txid):
             tx.deposit_tx_hash = data['hash']
             tx.deposit_tx_amount = data['amount']
             tx.status = 'waiting_for_confirmation'
+            tx.exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             tx.save()
             channel_name = 'txchannel-{}'.format(tx.order_id)
             chanel_layer = get_channel_layer()
@@ -81,11 +86,13 @@ def wait_for_tx_confirmation(txid):
     if tx.status == 'waiting_for_confirmation':
         data = Utils.getWalletTxDetail(tx, tx.deposit)
         if data is not None:
+            exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             deposit_confirmations = data['confirmations']
             channel_name = 'txchannel-{}'.format(tx.order_id)
             chanel_layer = get_channel_layer()
             if deposit_confirmations >= 6:
                 tx.status = 'deposit_received'
+                tx.exchange_rate = exchange_rate
                 tx.deposit_tx_confirmations = deposit_confirmations
                 tx.save()
                 async_to_sync(chanel_layer.group_send)(channel_name, {
@@ -94,6 +101,16 @@ def wait_for_tx_confirmation(txid):
                 })
                 get_exchange_rate.delay(txid)
             else:
+
+                tx.exchange_rate = exchange_rate
+                tx.deposit_tx_confirmations = deposit_confirmations
+                tx.save()
+
+                async_to_sync(chanel_layer.group_send)(channel_name, {
+                    'type': 'update.txinfo',
+                    'text': txid
+                })
+
                 # TODO:: Retry time from configuration specific to coin.
                 time.sleep(60)
                 wait_for_tx_confirmation.delay(txid)
@@ -191,4 +208,52 @@ def transfer_exchanged_amount(txid):
             'text': txid
         })
     else:
-        logger.warning("Tx {} at invalid step {} ! ".format(txid, tx.status))
+        logger.warning("Tx {} at invalid step {}! ".format(txid, tx.status))
+
+
+# Step6::Refund Remaining amount
+@task()
+def refund_task(txid):
+    tx = Transaction.objects.get(pk=txid)
+    logger = logging.getLogger('Refund Task')
+    if tx.status == 'out_order':
+        data = Utils.refund_remain_amount(tx)
+        status = 'refunded'
+        note = 'All Done!'
+
+        if data is not None:
+            for item in data:
+                tx_out = TransactionOutputs.objects.get(pk=item['id'])
+                if 'tx_hash' in item:
+                    tx_out.tx_hash = item['tx_hash']
+                else:
+                    tx_out.tx_hash = ''
+
+                tx_out.amount = item['amount']
+                if 'comment' in item:
+                    tx_out.comment = item['comment']
+                else:
+                    tx_out.comment = ''
+
+                tx_out.save()
+                if not tx_out.tx_hash:
+                    status = 'out_order';
+                    note = tx_out.comment
+
+            tx.status = status
+            tx.note = note
+            tx.save()
+        else:
+            tx.status = 'out_order'
+            tx.note = 'Something went wrong while refunding your amount, please contact to support center to further assistance!';
+            tx.save()
+
+        channel_name = 'txchannel-{}'.format(tx.order_id)
+        chanel_layer = get_channel_layer()
+        async_to_sync(chanel_layer.group_send)(channel_name, {
+            'type': 'update.txinfo',
+            'text': txid
+        })
+    else:
+        logger.warning('Tx {} at invalid step {}!'.format(txid, tx.status))
+

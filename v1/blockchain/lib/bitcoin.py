@@ -92,9 +92,10 @@ class Bitcoin(Http):
 
     @staticmethod
     def normalize_tx(data, address):
+
         if len(data) > 0:
             if 'hash' in data[0]:
-                hash = data['hash']
+                hash = data[0]['hash']
                 amount = 0;
                 for out in data[0]['outputs']:
                     if out['address'] == address:
