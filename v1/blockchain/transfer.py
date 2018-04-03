@@ -61,7 +61,7 @@ class Transfer:
         logger = logging.getLogger(__name__)
         status, data = Ripple().transfer(outs)
         if status == 200:
-            logger.info("Transfer TX BCH response {}".format(data))
-            return status, data
+            logger.info("Transfer TX XRP response {}".format(data))
+            return data
         else:
             return None

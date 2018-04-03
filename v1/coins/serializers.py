@@ -16,4 +16,4 @@ class CoinPairSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CoinPair
-        fields = ('id', 'source', 'destination', 'rate')
+        fields = ('id', 'source', 'destination', 'rate', 'minerFee')
