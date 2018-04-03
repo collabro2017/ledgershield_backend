@@ -10,7 +10,8 @@ class Coin(TimedModel):
     operational = models.BooleanField(default=False)
     service_fee = models.FloatField(default=0)
     decimals = models.PositiveIntegerField(default=0)
-    fee_per_kb = models.PositiveIntegerField(default=0)
+    # fee_per_kb = models.PositiveIntegerField(default=0)
+    multi_withdrawal = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

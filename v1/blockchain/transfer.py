@@ -62,6 +62,6 @@ class Transfer:
         status, data = Ripple().transfer(outs)
         if status == 200:
             logger.info("Transfer TX BCH response {}".format(data))
-            return data
+            return status, data
         else:
             return None

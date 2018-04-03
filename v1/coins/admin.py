@@ -5,7 +5,7 @@ from v1.coins.models import Coin, CoinPair
 
 
 class CoinAdmin(admin.ModelAdmin):
-    list_display = ('name','symbol','service_fee','operational', 'decimals' ,'date_modified')
+    list_display = ('name','symbol','service_fee','operational', 'decimals', 'date_modified')
 
 
 class CoinPairAdmin(admin.ModelAdmin):

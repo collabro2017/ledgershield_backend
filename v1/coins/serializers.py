@@ -9,9 +9,11 @@ class CoinSerializer(serializers.ModelSerializer):
         model = Coin
         fields = ('id','name','symbol','image', 'operational')
 
+
 class CoinPairSerializer(serializers.ModelSerializer):
     source = CoinSerializer(many=False)
     destination = CoinSerializer(many=False)
+
     class Meta:
         model = CoinPair
         fields = ('id', 'source', 'destination', 'rate')

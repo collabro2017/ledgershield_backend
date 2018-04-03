@@ -15,7 +15,7 @@ from v1.transactions.serializers import TransactionDetailSerializer, Transaction
 
 class Utils:
     @staticmethod
-    def getDespositAddress(coin, accountname):
+    def get_desposit_address(coin, accountname):
         logger = logging.getLogger(__name__)
         if coin.lower() == 'btc':
             status, response = Bitcoin().getAccount(accountname)
@@ -24,27 +24,27 @@ class Utils:
                 status, response = Bitcoin().createAccount(accountname)
                 logger.debug("2nd {} =>  {}".format(status, response))
             if status == 200:
-                return (response['name'], response['nestedAddress'])
+                return response['name'], response['nestedAddress'], None
         elif coin.lower() == 'eth':
             status, response = Ethereum().getAccount()
             if status == 200:
-                return (None, response['address'])
+                return None, response['address'], None
         elif coin.lower() == 'xrp':
             status, data = Ripple().generate_wallet()
+            logger.info(data)
             if status == 201:
-                return accountname, data['address']
-            return accountname, None
+                return accountname, data['address'], data['dt']
+            return accountname, None, None
         elif coin.lower() == 'bch':
             status, data = BitcoinCash().generate_wallet()
             if status == 201:
                 logger.info('{}'.format(data))
-                return accountname, data['lagacy']
+                return accountname, data['lagacy'], None
 
-
-        return (accountname, None)
+        return accountname, None, None
 
     @staticmethod
-    def getAccountName(src, dst):
+    def get_account_name(src, dst):
         return "{}-{}-{}".format(src, dst, datetime.now().timestamp())
 
     @staticmethod
@@ -56,9 +56,10 @@ class Utils:
         return None
 
     @staticmethod
-    def getWalletTransaction(address, coin):
+    def get_wallet_transaction(tx):
+        address = tx.wallet_address
         logger = logging.getLogger(__name__)
-        coin_name = coin.symbol.lower()
+        coin_name = tx.deposit.symbol.lower()
         if coin_name == 'btc':
             status, data = Bitcoin().getTxByAddress(address)
             if status == 200:
@@ -89,24 +90,25 @@ class Utils:
                 return {'hash': '--NONE--', 'amount': response['balance']}, False
 
         elif coin_name == 'xrp':
-            status, response = Ripple().get_account_info(address)
+            status, response = Ripple().get_balance_by_dt(tx.destination_tag)
             if status == 200:
-                balance = int(response['xrpBalance'])
-                hash = response['previousAffectingTransactionID']
-                logger.info("Balance {} Hash {}".format(balance, hash))
+                balance = float(response['balance'])
+                tx_hash = response['hash']
+                logger.info("Balance {} Hash {}".format(balance, tx_hash))
                 if balance <=0:
                     return None, True
-                return {'hash': hash,  'amount': balance}, False
+                return {'hash': tx_hash,  'amount': balance}, False
             else:
                 return None, True
 
         else:
-            logger.warning("{} is not supported yet!".format(coin))
+            logger.warning("{} is not supported yet!".format(coin_name))
 
-        return (None, False)
+        return None, False
 
     @staticmethod
-    def getWalletTxDetail(tx, coin):
+    def get_wallet_tx_detail(tx, coin):
+        logger = logging.getLogger('Wallet')
         coin_name = coin.symbol.lower()
         tx_hash =  tx.deposit_tx_hash
         if coin_name == 'btc':
@@ -128,14 +130,15 @@ class Utils:
             st, data = Ripple().get_tx_detail(tx_hash)
             if st == 200:
                 if 'outcome' in data:
-                    tx = Transaction.objects.get(deposit_tx_hash=tx_hash, deposit__symbol= coin)
-                    amount = data['outcome']['deliveredAmount']['value']
+                    # tx = Transaction.objects.get(deposit_tx_hash=tx_hash, deposit__symbol= coin)
+                    amount = float(data['outcome']['deliveredAmount']['value'])
+                    logger.info('{} {}'.format(tx.deposit_tx_amount, amount))
                     if tx.deposit_tx_amount == amount:
                         return {'confirmations': 6}
             return None
 
     @staticmethod
-    def getDepositAmount(outs, address):
+    def get_deposit_amount(outs, address):
         amount = 0;
 
         for out in outs:
@@ -158,7 +161,7 @@ class Utils:
         return outputs
 
     @staticmethod
-    def transferExchangedAmount(txid, coin):
+    def transfer_exchanged_amount(txid, coin):
         coin_name = coin.symbol.lower()
         tx = Transaction.objects.get(pk=txid)
         tx_out = TransactionOutsSerializer(tx).data

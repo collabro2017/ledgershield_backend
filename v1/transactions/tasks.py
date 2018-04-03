@@ -8,12 +8,9 @@ from channels.layers import get_channel_layer
 from v1.blockchain.utils import Utils
 from v1.coins.models import CoinPair
 from v1.transactions.models import Transaction, TransactionOutputs
-
-
-# Step1::Generate Deposit Address
 from v1.transactions.utils import get_pair_rates
 
-
+# Step1::Generate Deposit Address
 @task()
 def get_deposit_address(txid):
     logger = logging.getLogger(__name__)
@@ -23,19 +20,21 @@ def get_deposit_address(txid):
         src = tx.deposit.symbol;
         dst = tx.withdraw.symbol;
         account_name = "{}-{}-{}".format(src, dst, tx.id);
-        name, address = Utils.getDespositAddress(src, account_name)
+        name, address, dt = Utils.get_desposit_address(src, account_name)
         logger.info("Got Address {} and accountname {}".format(address, account_name))
         if address is not None:
             tx.status = 'awaiting'
             tx.wallet_address = address;
             tx.exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
+            if dt is not None:
+                tx.destination_tag = dt
             tx.save();
-            channel_name = 'txchannel-{}'.format(tx.order_id)
-            chanel_layer = get_channel_layer()
-            async_to_sync(chanel_layer.group_send)(channel_name, {
-                'type': 'update.txinfo',
-                'text': txid
-            })
+            # channel_name = 'txchannel-{}'.format(tx.order_id)
+            # chanel_layer = get_channel_layer()
+            # async_to_sync(chanel_layer.group_send)(channel_name, {
+            #     'type': 'update.txinfo',
+            #     'text': txid
+            # })
             wait_for_deposit.delay(tx.pk)
         else:
             logger.warning("Something went wrong while generating deposit address!")
@@ -51,7 +50,7 @@ def wait_for_deposit(txid):
     if tx.status == 'awaiting':
         address = tx.wallet_address
         logger.info("Waiting for {} deposit for address {} tx {}".format(tx.deposit.symbol, address, txid))
-        data, run = Utils.getWalletTransaction(address, tx.deposit)
+        data, run = Utils.get_wallet_transaction(tx)
         logger.info(data)
         if run:
             logger.info("retry within 5 seconds!")
@@ -65,12 +64,12 @@ def wait_for_deposit(txid):
             tx.status = 'waiting_for_confirmation'
             tx.exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             tx.save()
-            channel_name = 'txchannel-{}'.format(tx.order_id)
-            chanel_layer = get_channel_layer()
-            async_to_sync(chanel_layer.group_send)(channel_name, {
-                'type': 'update.txinfo',
-                'text': txid
-            })
+            # channel_name = 'txchannel-{}'.format(tx.order_id)
+            # chanel_layer = get_channel_layer()
+            # async_to_sync(chanel_layer.group_send)(channel_name, {
+            #     'type': 'update.txinfo',
+            #     'text': txid
+            # })
             wait_for_tx_confirmation.delay(txid)
             return
     else:
@@ -84,21 +83,21 @@ def wait_for_tx_confirmation(txid):
     tx = Transaction.objects.get(pk=txid)
     logger.info('tx [{}] - confirmations [{}]- status [{}]'.format(txid, tx.deposit_tx_confirmations, tx.status))
     if tx.status == 'waiting_for_confirmation':
-        data = Utils.getWalletTxDetail(tx, tx.deposit)
+        data = Utils.get_wallet_tx_detail(tx, tx.deposit)
         if data is not None:
             exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             deposit_confirmations = data['confirmations']
-            channel_name = 'txchannel-{}'.format(tx.order_id)
-            chanel_layer = get_channel_layer()
+            # channel_name = 'txchannel-{}'.format(tx.order_id)
+            # chanel_layer = get_channel_layer()
             if deposit_confirmations >= 6:
                 tx.status = 'deposit_received'
                 tx.exchange_rate = exchange_rate
                 tx.deposit_tx_confirmations = deposit_confirmations
                 tx.save()
-                async_to_sync(chanel_layer.group_send)(channel_name, {
-                    'type': 'update.txinfo',
-                    'text': txid
-                })
+                # async_to_sync(chanel_layer.group_send)(channel_name, {
+                #     'type': 'update.txinfo',
+                #     'text': txid
+                # })
                 get_exchange_rate.delay(txid)
             else:
 
@@ -106,10 +105,10 @@ def wait_for_tx_confirmation(txid):
                 tx.deposit_tx_confirmations = deposit_confirmations
                 tx.save()
 
-                async_to_sync(chanel_layer.group_send)(channel_name, {
-                    'type': 'update.txinfo',
-                    'text': txid
-                })
+                # async_to_sync(chanel_layer.group_send)(channel_name, {
+                #     'type': 'update.txinfo',
+                #     'text': txid
+                # })
 
                 # TODO:: Retry time from configuration specific to coin.
                 time.sleep(60)
@@ -140,7 +139,7 @@ def get_exchange_rate(txid):
         logger.info("Converted in max unit {} and type {}".format(last_unit, type(last_unit)))
         # Calculating service fee
         fee = (last_unit * tx.deposit.service_fee) / 100;
-        # Substracting service fee form exchanged amount.
+        # Subtracting service fee form exchanged amount.
         exchange_amount = last_unit - fee;
         logger.info("Deducted Fee {}, Exchange {} amount {}".format(fee, tx.deposit.symbol, exchange_amount))
         # Getting the final exchanged amount.
@@ -155,12 +154,12 @@ def get_exchange_rate(txid):
         tx.save()
 
         # Updating client via socket
-        channel_name = 'txchannel-{}'.format(tx.order_id)
-        chanel_layer = get_channel_layer()
-        async_to_sync(chanel_layer.group_send)(channel_name, {
-            'type': 'update.txinfo',
-            'text': txid
-        })
+        # channel_name = 'txchannel-{}'.format(tx.order_id)
+        # chanel_layer = get_channel_layer()
+        # async_to_sync(chanel_layer.group_send)(channel_name, {
+        #     'type': 'update.txinfo',
+        #     'text': txid
+        # })
         transfer_exchanged_amount.delay(txid)
 
 
@@ -170,7 +169,7 @@ def transfer_exchanged_amount(txid):
     logger = logging.getLogger(__name__)
     tx = Transaction.objects.get(pk=txid)
     if tx.status == 'exchange':
-        data = Utils.transferExchangedAmount(txid, tx.withdraw)
+        data = Utils.transfer_exchanged_amount(txid, tx.withdraw)
         status = 'completed'
         note = 'All done!'
 
@@ -201,12 +200,12 @@ def transfer_exchanged_amount(txid):
             tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
             tx.save()
 
-        channel_name = 'txchannel-{}'.format(tx.order_id)
-        chanel_layer = get_channel_layer()
-        async_to_sync(chanel_layer.group_send)(channel_name, {
-            'type': 'update.txinfo',
-            'text': txid
-        })
+        # channel_name = 'txchannel-{}'.format(tx.order_id)
+        # chanel_layer = get_channel_layer()
+        # async_to_sync(chanel_layer.group_send)(channel_name, {
+        #     'type': 'update.txinfo',
+        #     'text': txid
+        # })
     else:
         logger.warning("Tx {} at invalid step {}! ".format(txid, tx.status))
 
@@ -248,12 +247,12 @@ def refund_task(txid):
             tx.note = 'Something went wrong while refunding your amount, please contact to support center to further assistance!';
             tx.save()
 
-        channel_name = 'txchannel-{}'.format(tx.order_id)
-        chanel_layer = get_channel_layer()
-        async_to_sync(chanel_layer.group_send)(channel_name, {
-            'type': 'update.txinfo',
-            'text': txid
-        })
+        # channel_name = 'txchannel-{}'.format(tx.order_id)
+        # chanel_layer = get_channel_layer()
+        # async_to_sync(chanel_layer.group_send)(channel_name, {
+        #     'type': 'update.txinfo',
+        #     'text': txid
+        # })
     else:
         logger.warning('Tx {} at invalid step {}!'.format(txid, tx.status))
 

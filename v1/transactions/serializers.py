@@ -15,7 +15,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     outs = TransactionOutputsSerializer(many=True)
     class Meta:
         model = Transaction
-        fields = ('id','order_id','status','deposit','wallet_address', 'deposit_tx_hash',
+        fields = ('id','order_id','status','deposit','wallet_address', 'destination_tag' ,'deposit_tx_hash',
                   'deposit_tx_amount','rollback_wallet', 'withdraw', 'exchange_rate', 'note', 'outs'
                 )
         read_only_fields = ('wallet_address', 'order_id','deposit_tx_hash','deposit_tx_amount','exchange_rate')
@@ -40,7 +40,7 @@ class TransactionDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ('id', 'order_id', 'status', 'deposit', 'wallet_address', 'deposit_tx_hash', 'date_modified', 'date_created',
+        fields = ('id', 'order_id', 'status', 'deposit', 'wallet_address', 'destination_tag','deposit_tx_hash', 'date_modified', 'date_created',
                   'deposit_tx_amount', 'deposit_tx_confirmations', 'rollback_wallet', 'withdraw', 'exchange_rate', 'note', 'outs'
                   )
         read_only_fields = ('wallet_address', 'order_id', 'deposit_tx_hash', 'deposit_tx_amount', 'deposit_tx_confirmations',
