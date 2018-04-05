@@ -7,7 +7,7 @@ class CoinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coin
-        fields = ('id','name','symbol','image', 'operational')
+        fields = ('id','name','symbol','image', 'operational','block_explorer_url')
 
 
 class CoinPairSerializer(serializers.ModelSerializer):

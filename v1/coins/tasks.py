@@ -26,14 +26,17 @@ def sync_cp_rates():
     for pair in paris:
         src = pair.source.symbol.lower();
         dst = pair.destination.symbol.lower();
-        coin_pair = '{}_{}'.format(src,dst)
-        # logger.info('https://shapeshift.io/marketinfo/{}'.format(coin_pair))
-        status, data = fetch_pair_rate(coin_pair)
-        if status == 200:
-            market_info = json.loads(data)
-            rate = market_info['rate']
-            miner_fee = market_info['minerFee']
-            pair.rate = rate
-            pair.minerFee = miner_fee
-            pair.save()
-        logger.info('{} {}'.format(status, data))
+        if src != dst:
+            coin_pair = '{}_{}'.format(src,dst)
+            # logger.info('https://shapeshift.io/marketinfo/{}'.format(coin_pair))
+            status, data = fetch_pair_rate(coin_pair)
+
+            if status == 200:
+                market_info = json.loads(data)
+                if "error" not in market_info:
+                    rate = market_info['rate']
+                    miner_fee = market_info['minerFee']
+                    pair.rate = rate
+                    pair.minerFee = miner_fee
+                    pair.save()
+            logger.info('{} {}'.format(status, data))

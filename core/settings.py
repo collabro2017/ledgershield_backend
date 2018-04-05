@@ -92,9 +92,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'ledgers',
+            'USER': 'postgres',
+            'PASSWORD': 'mysecretpassword',
+            'HOST': '192.168.10.11',
+            'PORT': 5432,
     }
 }
 
@@ -161,7 +169,7 @@ SWAGGER_SETTINGS = {
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://user:password@127.0.0.1:5672'
+CELERY_BROKER_URL = 'amqp://user:password@192.168.10.11:5672'
 
 
 REST_FRAMEWORK = {
@@ -173,7 +181,7 @@ CHANNEL_LAYERS = {
    "default": {
        "BACKEND": "channels_redis.core.RedisChannelLayer",  # use redis backend
        "CONFIG": {
-           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
+           "hosts": [os.environ.get('REDIS_URL', 'redis://192.168.10.11:6379')],  # set redis address
        }
    },
 }

@@ -38,6 +38,8 @@ def get_deposit_address(txid):
             wait_for_deposit.delay(tx.pk)
         else:
             logger.warning("Something went wrong while generating deposit address!")
+            time.sleep(5)
+            get_deposit_address.delay(txid)
     else:
         logger.warning("Tx {} at invalid step, to get the deposit address! ".format(txid))
 
