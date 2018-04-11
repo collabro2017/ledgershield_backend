@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ledger Sheild :: Crypto Exchange</title>
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap-grid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bs/bootstrap-reboot.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light box-shadow border-bottom">
+        <div class="container">
+            <a class="navbar-brand">
+                <img src="{% static 'img/logo.png' %}" alt="Ledger Shield" title="Ledger Shield" />
+                <small>Off The Chain</small>
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a href="/" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/about" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/faq" class="nav-link">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/service-fee" class="nav-link">Service Fee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact-us" class="nav-link">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

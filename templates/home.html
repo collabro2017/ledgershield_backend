@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 text-center mb-5">
+            <h3 class="pb-5 pt-5">Which coins do you want to exchange?</h3>
+            <div class="card-deck">
+                {% for coin in coins %}
+                <div class="card">
+                    <div class="card-body">
+                        <img class="mb-3" src="{{MEDIA_URL}}{{coin.image.url}}" alt="{{coin.symbol}}" title="{{coin.name}}" />
+                        <h5 class="card-title">{{coin.name}}</h5>
+                        {% if coin.operational %}
+                            <a href="/exchange/{{coin.symbol | lower}}" class="btn btn-block btn-outline-primary">Deposit {{coin.symbol}}</a>
+                        {% else %}
+                            <button class="btn btn-block btn-outline-warning">COMING SOON</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-12 pb-5">
+            <h3 class="pb-5 text-center">Why should I trade on Ledger Shield?</h3>
+            <div class="card-deck">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'img/hackerspy.jpg' %}" alt="hacker_spy">
+                    <div class="card-body pt-3 text-center">
+                        <p class="card-text">We pay you instantly so there is no central exchange that can get hacked.</p>
+                        <p class="card-text">You can spread your coins out among an infinite number of addresses so hacker's won't go after a big single wallet.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'img/bankgraphic.jpg' %}" alt="bankgraphic">
+                    <div class="card-body pt-3 text-center">
+                        <p class="card-text">Major exchanges and their custodial banks track your coins from the moment you buy them. Doin something they don't like? They can shut down your account or refuse to accepts payments.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'img/securitygraphic.jpg' %}" alt="securitygraphic">
+                    <div class="card-body pt-3 text-center">
+                        <p class="card-text">Want anonymity without exchanging currency? The coins you will receive are purchased on the open market by us, they are not linked to any other customer or their past activity.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'img/filegraphic.jpg' %}" alt="filegraphic">
+                    <div class="card-body pt-3 text-center">
+                        <p class="card-text">We require no indentifying information, and purge all transaction history daily. Need to reach our support team? You are identified only by your transaction ID# which we log for only 24hrs.</p>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-3 text-center">Visit our <a href="/about">about</a> page for information on how Ledger Shield works, and our <a href="/faw">FAQ</a> page to learn why it’s the only way to make your transactions private.</p>
+        </div>
+    </div>
+{% endblock %}
