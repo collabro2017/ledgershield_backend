@@ -56,6 +56,15 @@
                             <div class="mb-3">
                                 <p class="wallet-address address">{{tx.wallet_address}}</p>
                             </div>
+                            {% if tx.destination_tag %}
+                                <div>
+                                    <h5>Destination Tag</h5>
+                                    <p>{{tx.destination_tag}}</p>
+                                    <p class="alert alert-warning text-center">
+                                        <strong>Warning:</strong> To avoid losing your Ripple, make sure you fill in the appropriate destination tag at the end of the address!
+                                    </p>
+                                </div>
+                            {% endif %}
 
                              <h5>
                                 <img class="mb-3" src="{{MEDIA_URL}}{{tx.withdraw.image.url}}" alt="{{tx.withdraw.symbol}}" title="{{tx.withdraw.name}}" width="36px" />
