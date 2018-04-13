@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+    <meta http-equiv="refresh" content="10" >
+{% endblock %}
+{% block content %}
+    <div class="row mt-5 mb-5 justify-content-center">
+        <div class="col-md-9">
+            <h3 class="mt-3 text-center">Transaction status</h3>
+            <div class="card mt-3">
+                <div class="card-header tx-header">
+                    <strong>Order ID:</strong>
+                    <span>{{tx.order_id}}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            Created at <br />
+                            {{tx.date_created | timesince }} ago
+                        </div>
+                        <div class="col-md-4 text-center">
+                            Updated at <br />
+                            {{tx.date_modified | timesince }} ago
+                        </div>
+                        <div class="col-md-4 text-center">
+                            Confirmations  <br />
+                            {{tx.deposit_tx_confirmations}}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body tx-progress">
+                    <div class="row text-center">
+                        <div class="col-md-12">
+                            <i class="fa fa-exchange"></i>
+                            {{tx_status.label}}
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated {{tx_status.cssClass}}" style="width: {{tx_status.progress}}%">
+                                    <span>{{tx_status.progress}}% {{tx_status.label}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body order-details">
+
+                    <h4 class="card-title text-muted">Order Details</h4>
+                    <div class="row">
+                        <div class="col-md-12 text-muted">
+                            <h5>
+                                <img class="mb-3" src="{{MEDIA_URL}}{{tx.deposit.image.url}}" alt="{{tx.deposit.symbol}}" title="{{tx.deposit.name}}" width="36px" />
+                                <span>Deposit</span>
+
+                            </h5>
+                            <div class="mb-3">
+                                <p class="wallet-address address">{{tx.wallet_address}}</p>
+                            </div>
+
+                             <h5>
+                                <img class="mb-3" src="{{MEDIA_URL}}{{tx.withdraw.image.url}}" alt="{{tx.withdraw.symbol}}" title="{{tx.withdraw.name}}" width="36px" />
+                                <span>Receive</span>
+
+                            </h5>
+
+                            {% for out in tx.outs.all %}
+                                <div class="mb-3">
+                                    <div class="wallet-address">
+                                        <span class="address mb-1 align-middle">{{out.address}} <span class="badge badge-light">{{out.value}}%</span></span>
+                                        {% if out.tx_hash %}
+                                            <span class="float-right">
+                                                <a href="{{tx.withdraw.block_explorer_url}}{{out.tx_hash}}" target="_blank" class="btn btn-sm btn-outline-success">View at explorer</a>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <h5 class="d-block">Final Rate</h5>
+                            <span>1 {{tx.deposit.symbol}} =  {{tx.exchange_rate}} {{tx.withdraw.symbol}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
