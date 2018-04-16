@@ -26,30 +26,28 @@ def index(request, deposit):
             });
         else:
             try:
-                if validate():
-                    context = request.POST
-                    outs = int(request.POST['outs'])
-                    tx_outs = []
+                context = request.POST
+                outs = int(request.POST['outs'])
+                tx_outs = []
 
-                    for i in range(outs):
-                        address = context['dest_addr_{}'.format(i)]
-                        value = context['dest_amount_{}'.format(i)]
-                        tx_out = TransactionOutputs()
-                        tx_out.address = address
-                        tx_out.value = value
-                        tx_out.save()
-                        tx_outs.append(tx_out)
+                for i in range(outs):
+                    address = context['dest_addr_{}'.format(i)]
+                    value = context['dest_amount_{}'.format(i)]
+                    tx_out = TransactionOutputs()
+                    tx_out.address = address
+                    tx_out.value = value
+                    tx_out.save()
+                    tx_outs.append(tx_out)
 
-                    tx = Transaction()
-                    tx.deposit = Coin.objects.get(pk=context['deposit'])
-                    tx.withdraw = Coin.objects.get(pk=context['withdraw'])
-                    tx.rollback_wallet = context['rollback_wallet']
-                    tx.save()
-                    tx.outs.set(tx_outs)
-                    tx.save()
-                    return redirect('/tx/status/{}'.format(tx.order_id))
-                else:
-                    pass
+                tx = Transaction()
+                tx.deposit = Coin.objects.get(pk=context['deposit'])
+                tx.withdraw = Coin.objects.get(pk=context['withdraw'])
+                tx.rollback_wallet = context['rollback_wallet']
+                tx.save()
+                tx.outs.set(tx_outs)
+                tx.save()
+                return redirect('txstatus',order_id=tx.order_id)
+
             except Exception as ex:
                 print(ex)
                 return redirect('/error')

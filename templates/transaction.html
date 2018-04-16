@@ -51,10 +51,13 @@
                             <h5>
                                 <img class="mb-3" src="{{MEDIA_URL}}{{tx.deposit.image.url}}" alt="{{tx.deposit.symbol}}" title="{{tx.deposit.name}}" width="36px" />
                                 <span>Deposit</span>
-
                             </h5>
                             <div class="mb-3">
-                                <p class="wallet-address address">{{tx.wallet_address}}</p>
+                                {% if tx.wallet_address %}
+                                    <p class="wallet-address address">{{tx.wallet_address}}</p>
+                                {% else %}
+                                    <p class="alert alert-warning">Please wait generating deposit address!</p>
+                                {% endif %}
                             </div>
                             {% if tx.destination_tag %}
                                 <div>

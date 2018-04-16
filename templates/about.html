@@ -1,5 +1,52 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <h1>About page</h1>
+<div class="row">
+  <div class="col-md-12 text-center mt-5">
+    <h3>We Dodge The World's Biggest Tracking Companies</h3>
+    <h4 class="text-muted pt-2">
+      Our Process passes through multiple blockchains!
+    </h4>
+    <div class="card mt-5 bg-info mb-3">
+      <div class="card-header">
+        <h5>How it works</h5>
+      </div>
+      <img src="{% static 'img/aboutus.jpg' %}" alt="Exchange Process" />
+      <div class="card-body bg-white">
+        <div class="card-deck">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text">
+                You choose which coins you want. Tell us where to send
+                them. Send us your coins and track the whole process in
+                real time!
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text">
+                We sell your coins through tons of wallets and addresses
+                to numerous global liquidity providers, and exchange
+                fresh coins on the open market multiple times before
+                giving them to you.
+              </p>
+              <strong>But you don't have to wait!</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text">
+                Right after we receive your coins the exchange rate is
+                locked-in, and send you the coins you want to the
+                addresses you provided.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>Chainalysis and Elliptic can track you through tumblers and even swapping currencies. <br />Using a tumbler or altcoins alone does not make you safe! <strong>We make tracking virtually impossible.</strong></p>
+  </div>
+</div>
 {% endblock %}

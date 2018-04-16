@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{% static 'css/bs/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bs/bootstrap-grid.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bs/bootstrap-reboot.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block head %}{% endblock %}
 </head>
@@ -20,19 +22,19 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                        <a href="/" class="nav-link">Home</a>
+                        <a href="{% url 'home'%}" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/about" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                        <a href="{% url 'about'%}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/faq" class="nav-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}">FAQ</a>
+                        <a href="{% url 'faq'%}" class="nav-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}">FAQ</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/service-fee" class="nav-link {% if request.resolver_match.url_name == 'service-fee' %}active{% endif %}">Service Fee</a>
+                        <a href="{% url 'service-fee'%}" class="nav-link {% if request.resolver_match.url_name == 'service-fee' %}active{% endif %}">Service Fee</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/contact-us" class="nav-link {% if request.resolver_match.url_name == 'contact-us' %}active{% endif %}">Contact Us</a>
+                        <a href="{% url 'contact-us'%}" class="nav-link {% if request.resolver_match.url_name == 'contact-us' %}active{% endif %}">Contact Us</a>
                     </li>
                 </ul>
             </div>
