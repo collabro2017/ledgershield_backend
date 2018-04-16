@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'v1.coins',
     'v1.pages',
     'v1.transactions',
+    'v1.legacy',
 
     'django.contrib.admin',
     'django.contrib.auth',
