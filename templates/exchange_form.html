@@ -28,24 +28,35 @@
                     <h5>Privacy Made Easy</h5>
                 </div>
                 <div class="card-body">
-
-
                     <form method="post">
                         {% csrf_token %}
                         {{ form.outs }}
                         <div class="form-group">
                             <label>Deposit:</label>
                             {{ form.deposit }}
+                            {% if errors.deposit %}
+                                <p class="alert alert-danger mt-1">{{errors.deposit}}</p>
+                            {% endif %}
+
                         </div>
                         <div class="form-group">
                             <label>Your Refund Address:</label>
                             {{ form.rollback_wallet }}
+                            {% if errors.rollback_wallet %}
+                                <p class="alert alert-danger mt-1">{{errors.rollback_wallet}}</p>
+                            {% endif %}
                         </div>
                         <div class="form-group">
                             <label>Receive:</label>
                             {{ form.withdraw }}
+                            {% if errors.withdraw %}
+                                <p class="alert alert-danger mt-1">{{errors.withdraw}}</p>
+                            {% endif %}
                         </div>
                         <div class="form-group">
+                            {% if errors.over100 %}
+                                <p class="alert alert-danger"><strong>Error!</strong> {{errors.over100}}</p>
+                            {% endif %}
                             {% for index in outs %}
                                 <div class="row">
                                     <div class="col-md-8">
@@ -61,6 +72,13 @@
                                         </div>
                                     </div>
                                     <div class="col-md-1"></div>
+                                    {% index_exists errors.outs index as o_error %}
+                                    {% if o_error %}
+                                    <div class="col-md-12">
+                                        <p class="alert alert-danger">{{errors.outs | error:index}}</p>
+                                    </div>
+                                    {% endif %}
+
                                 </div>
                             {% endfor %}
                         </div>
