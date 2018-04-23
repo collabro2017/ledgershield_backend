@@ -3,6 +3,7 @@ from .views import pages, exchange, transaction
 
 urlpatterns = [
     url(r'exchange/(?P<deposit>[^\/]+)$', exchange.index, name='exchange' ),
+    url(r'rates/(?P<deposit>[^\/]+)$', exchange.rates, name='rates' ),
     url(r'tx/status/(?P<order_id>[^\/]+)$', transaction.index, name='txstatus'),
     url(r'about/', pages.about, name='about'),
     url(r'faq/', pages.faq, name='faq'),

@@ -72,3 +72,7 @@ ol li {
 .error {
     color: red
 }
+.rates_frame {
+    border: none;
+    height: 500px;
+}

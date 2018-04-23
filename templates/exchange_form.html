@@ -4,23 +4,7 @@
 {% block content %}
     <div class="row mt-5 mb-5">
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Rates for BTC pairs</h5>
-                </div>
-                <ul class="list-group list-group-flush">
-                    {% for pair in pairs %}
-                    <li class="list-group-item">
-                        <span class="badge badge-primary">1.00 {{pair.source.symbol}}</span>
-                        /
-                        <span class="badge badge-success">{{pair.rate}} {{pair.destination.symbol}}</span>
-                        {% if pair.destination.symbol == pair.source.symbol %}
-                        / <span class="badge badge-warning">mixing</span>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <iframe class="rates_frame" src="{% url 'rates' symbol|lower %}"></iframe>
         </div>
         <div class="col-md-8">
             <div class="card">
@@ -38,6 +22,7 @@
                                 <p class="alert alert-danger mt-1">{{errors.deposit}}</p>
                             {% endif %}
 
+                            <button class="btn btn-info mt-1" name="rates" value="update">Update Rates</button>
                         </div>
                         <div class="form-group">
                             <label>Your Refund Address:</label>
@@ -83,8 +68,11 @@
                             {% endfor %}
                         </div>
                         <div class="text-right form-group">
+                            {% if outs|length > 1%}
+                            <button class="btn btn-outline-danger" name="remove_last" value="yes"><i class="fa fa-minus"></i> Remove last output</button>
+                            {% endif %}
                             <button class="btn btn-outline-primary" name="add_more" value="add_more"><i class="fa fa-plus"></i> Add output</button>
-                            <button class="btn btn-primary"name="create_tx" value="create_tx">Create Transaction</button>
+                            <button class="btn btn-primary" name="create_tx" value="create_tx"><i class="fa fa-save"></i> Create Transaction</button>
                         </div>
                     </form>
                 </div>

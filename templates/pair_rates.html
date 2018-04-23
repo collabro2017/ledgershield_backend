@@ -1,0 +1,23 @@
+{% extends "no-header.html" %}
+{% block head %}
+    <meta http-equiv="refresh" content="5" >
+{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h5>Rates for {{symbol}} pairs</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for pair in pairs %}
+            <li class="list-group-item">
+                <span class="badge badge-primary">1.00 {{pair.source.symbol}}</span>
+                /
+                <span class="badge badge-success">{{pair.rate}} {{pair.destination.symbol}}</span>
+                {% if pair.destination.symbol == pair.source.symbol %}
+                / <span class="badge badge-warning">mixing</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

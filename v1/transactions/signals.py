@@ -9,7 +9,6 @@ from v1.transactions.tasks import get_deposit_address
 
 @receiver(post_save, sender=Transaction)
 def on_transaction_save(sender, instance, **kwargs):
-
     if kwargs['created']:
         get_deposit_address.delay(instance.id)
     else:

@@ -79,21 +79,50 @@ def validate(context):
         return errors, False
 
 def index(request, deposit):
+
     symbol = deposit.upper()
-    pairs = CoinPair.objects.filter(source__symbol=symbol)
 
     if request.method == 'POST':
 
-        if request.POST.get("add_more"):
+        if request.POST['deposit'].isnumeric():
+            d = int(request.POST['deposit'])
+            if d > 0 :
+                c = Coin.objects.get(pk=d)
+                symbol = c.symbol
+
+        if request.POST.get("remove_last"):
+            outs = int(request.POST['outs']) -1
+            if outs < 2 :
+                outs = 1
+            context = request.POST.copy()
+            context['outs']= outs
+            form = TransactionForm(context)
+            return render(request, 'exchange_form.html', {
+                'symbol': symbol,
+                'form': form,
+                'outs': range(0, outs),
+                'context': context
+            });
+        elif request.POST.get("add_more"):
             outs = int(request.POST['outs']) +1
             context = request.POST.copy()
             context['outs']= outs
             form = TransactionForm(context)
             return render(request, 'exchange_form.html', {
-                'pairs': pairs,
+                'symbol': symbol,
                 'form': form,
                 'outs': range(0, outs),
                 'context': context
+            });
+        elif request.POST.get("rates"):
+            context = request.POST
+            outs = int(request.POST['outs'])
+            form = TransactionForm(context)
+            return render(request, 'exchange_form.html', {
+                'symbol': symbol,
+                'form': form,
+                'context': context,
+                'outs': range(0, outs),
             });
         else:
             try:
@@ -105,7 +134,7 @@ def index(request, deposit):
                     context['outs'] = outs
                     form = TransactionForm(context)
                     return render(request, 'exchange_form.html', {
-                        'pairs': pairs,
+                        'symbol': symbol,
                         'form': form,
                         'outs': range(0, outs),
                         'context': context,
@@ -122,6 +151,7 @@ def index(request, deposit):
                     tx_out.save()
                     tx_outs.append(tx_out)
 
+
                 tx = Transaction()
                 tx.deposit = Coin.objects.get(pk=context['deposit'])
                 tx.withdraw = Coin.objects.get(pk=context['withdraw'])
@@ -132,12 +162,25 @@ def index(request, deposit):
                 return redirect('txstatus',order_id=tx.order_id)
 
             except Exception as ex:
-                print(ex)
-                return redirect('/error')
+                form = TransactionForm()
+                return render(request, 'exchange_form.html', {
+                    'symbol': symbol,
+                    'form': form,
+                    'outs': range(0, 1),
+                    'error': str(ex)
+                });
     else:
         form = TransactionForm()
         return render(request, 'exchange_form.html', {
-            'pairs': pairs,
+            'symbol': symbol,
             'form': form,
             'outs': range(0,1)
         });
+
+def rates(request, deposit):
+    symbol = deposit.upper()
+    pairs = CoinPair.objects.filter(source__symbol=symbol)
+    return render(request, 'pair_rates.html', {
+        'pairs': pairs,
+        'symbol': symbol
+    });
