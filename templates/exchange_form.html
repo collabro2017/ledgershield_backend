@@ -44,7 +44,7 @@
                             {% endif %}
                             {% for index in outs %}
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-9">
                                         <div class="form-group">
                                             <label>Your Withdrawal Address:</label>
                                             <input type="text" name="dest_addr_{{index}}" value="{{context | faddress:index}}" class="form-control">
@@ -56,7 +56,7 @@
                                             <input type="text" name="dest_amount_{{index}}" value="{{context | fshare:index}}"  class="form-control">
                                         </div>
                                     </div>
-                                    <div class="col-md-1"></div>
+
                                     {% index_exists errors.outs index as o_error %}
                                     {% if o_error %}
                                     <div class="col-md-12">
