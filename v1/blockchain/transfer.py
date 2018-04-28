@@ -3,6 +3,7 @@ import logging
 from v1.blockchain.lib.bitcoin import Bitcoin
 from v1.blockchain.lib.bitcoincash import BitcoinCash
 from v1.blockchain.lib.ethereum import Ethereum
+from v1.blockchain.lib.monero import Monero
 from v1.blockchain.lib.ripple import Ripple
 
 
@@ -62,6 +63,16 @@ class Transfer:
         status, data = Ripple().transfer(outs)
         if status == 200:
             logger.info("Transfer TX XRP response {}".format(data))
+            return data
+        else:
+            return None
+
+    @classmethod
+    def XMR(outs):
+        logger = logging.getLogger(__name__)
+        status, data = Monero().transfer(outs)
+        if status == 200:
+            logger.info("Transfer TX XMR response {}".format(data))
             return data
         else:
             return None

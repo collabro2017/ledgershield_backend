@@ -8,6 +8,6 @@ class BitcoinStealthAddress(views.APIView):
 
     def get(self, request, src, dst):
         accountName = Utils.get_account_name(src, dst)
-        name, address =  Utils.get_desposit_address(src, accountName)
+        name, address =  Utils.get_deposit_address(src, accountName)
         serializer = blockchain.BitcoinSerializers({'address':address, 'account':name})
         return Response(serializer.data)

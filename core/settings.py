@@ -191,3 +191,26 @@ CHANNEL_LAYERS = {
 
 ASGI_APPLICATION = 'core.routing.application'
 
+
+BLOCKCHAIN_NODES = {
+    'MONERO': {
+        'SERVER': 'http://localhost:9004'
+    },
+    'ETHEREUM': {
+        'SERVER': 'http://localhost:8003'
+    },
+    'BITCOIN': {
+        'SERVER': 'http://18.222.5.20:18332',
+        'API_KEY': '220b6e10-17df-11e8-b642-0ed5f89f718b',
+        'WALLET_ID': 'defaultwallet236',
+        'PASSPHRASE': 'this is dummy text, needs to be changed',
+        'NETWORK': 'testnet'
+    },
+    'BITCOIN_CASH': {
+        'SERVER': 'http://localhost:9003'
+    },
+    'RIPPLE': {
+        'SERVER': 'http://localhost:9002'
+    }
+}
+
