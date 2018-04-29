@@ -13,10 +13,10 @@
                 <span class="badge badge-primary">1.00 {{pair.source.symbol}}</span>                /
 
                 {% if pair.destination.symbol == pair.source.symbol %}
-                    <span class="badge badge-success">{{pair.rate|floatformat:6}} {{pair.destination.symbol}}</span>
+                    <span class="badge badge-success">{{pair.rate|floatformat:2}} {{pair.destination.symbol}}</span>
                     / <span class="badge badge-warning">mixing</span>
                 {% else %}
-                    <span class="badge badge-success">{{pair.rate}} {{pair.destination.symbol}}</span>
+                    <span class="badge badge-success">{{pair.rate|floatformat:6}} {{pair.destination.symbol}}</span>
                 {% endif %}
             </li>
             {% endfor %}
