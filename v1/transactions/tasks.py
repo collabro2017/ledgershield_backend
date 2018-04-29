@@ -45,7 +45,7 @@ def wait_for_deposit(txid):
     if tx.status == 'awaiting':
         address = tx.wallet_address
         logger.info("Waiting for {} deposit for address {} tx {}".format(tx.deposit.symbol, address, txid))
-        data, run = Utils.get_wallet_transaction(tx)
+        data, run = Utils.get_deposit(tx)
         logger.info(data)
         if run:
             logger.info("retry within 5 seconds!")
@@ -73,7 +73,7 @@ def wait_for_tx_confirmation(txid):
     tx = Transaction.objects.get(pk=txid)
     logger.info('tx [{}] - confirmations [{}]- status [{}]'.format(txid, tx.deposit_tx_confirmations, tx.status))
     if tx.status == 'waiting_for_confirmation':
-        data = Utils.get_wallet_tx_detail(tx, tx.deposit)
+        data = Utils.get_confirmation(tx)
         if data is not None:
             exchange_rate = get_pair_rates(tx.deposit.pk, tx.withdraw.pk)
             deposit_confirmations = data['confirmations']

@@ -19,7 +19,7 @@ def fetch_pair_rate(pair):
         return 500, None
     return response.status_code, response.text
 
-@periodic_task(run_every=(crontab(minute='*/5')), name="sync_cp_rates", )
+@periodic_task(run_every=(crontab(minute='*/1')), name="sync_cp_rates", )
 def sync_cp_rates():
     logger = logging.getLogger(__name__)
     paris = CoinPair.objects.all()

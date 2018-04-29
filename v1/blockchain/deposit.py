@@ -57,8 +57,8 @@ class Deposit:
     def XMR(self):
         status, response = Monero().get_deposit_amount(self.tag)
         if status == 200:
-            if 'tx_amount' in response and 'tx_hash' in response:
-                tx_amount = float(response['tx_amount'])
+            if 'amount' in response and 'tx_hash' in response:
+                tx_amount = response['amount']
                 tx_hash = response['tx_hash']
                 return {'hash': tx_hash, 'amount': tx_amount}
         return None, True

@@ -18,20 +18,16 @@ class Monero(Http):
         endpoint = "wallet/info/{}".format(payment_id)
         return self.get(endpoint)
 
-    def get_tx_detal(self, tx_hash):
-        endpoint = "wallet/tx/{}".format(tx_hash)
-        return self.get(endpoint)
-
     def transfer(self, outs):
         endpoint = 'wallet/transfer'
         return self.post(endpoint, outs)
 
     def get(self, endpoint):
-        url = self.buildUrl(endpoint)
+        url = self.build_url(endpoint)
         return super().callget(url=url, auth=None)
 
     def post(self, endpoint, data):
-        url = self.buildUrl(endpoint)
+        url = self.build_url(endpoint)
         return super().callpost(url=url, data=data, auth=None)
 
 

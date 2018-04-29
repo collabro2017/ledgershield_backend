@@ -12,7 +12,7 @@
             <li class="list-group-item">
                 <span class="badge badge-primary">1.00 {{pair.source.symbol}}</span>
                 /
-                <span class="badge badge-success">{{pair.rate}} {{pair.destination.symbol}}</span>
+                <span class="badge badge-success">{{pair.rate|floatformat:6}} {{pair.destination.symbol}}</span>
                 {% if pair.destination.symbol == pair.source.symbol %}
                 / <span class="badge badge-warning">mixing</span>
                 {% endif %}

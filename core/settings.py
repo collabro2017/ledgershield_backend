@@ -26,7 +26,7 @@ SECRET_KEY = 'a6!y0h$)6v2$dve_^tq5!6p_q*+kveqk&e7u(otli-v4!nsx2t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.58.248.113', 'localhost']
+ALLOWED_HOSTS = ['13.58.248.113', 'localhost','ioe5rl3ghmlwupzx.onion']
 
 
 # Application definition
@@ -96,14 +96,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
-    'postgreql': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'ledgers',
-            'USER': 'postgres',
-            'PASSWORD': 'mysecretpassword',
-            'HOST': '192.168.10.11',
-            'PORT': 5432,
-    }
+    # 'postgreql': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'ledgers',
+    #         'USER': 'postgres',
+    #         'PASSWORD': 'mysecretpassword',
+    #         'HOST': '192.168.10.11',
+    #         'PORT': 5432,
+    # }
 }
 
 
@@ -172,7 +172,7 @@ SWAGGER_SETTINGS = {
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://user:password@192.168.10.11:5672'
+CELERY_BROKER_URL = 'amqp://user:password@localhost:5672'
 
 
 REST_FRAMEWORK = {
@@ -184,7 +184,7 @@ CHANNEL_LAYERS = {
    "default": {
        "BACKEND": "channels_redis.core.RedisChannelLayer",  # use redis backend
        "CONFIG": {
-           "hosts": [os.environ.get('REDIS_URL', 'redis://192.168.10.11:6379')],  # set redis address
+           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
        }
    },
 }
@@ -194,7 +194,7 @@ ASGI_APPLICATION = 'core.routing.application'
 
 BLOCKCHAIN_NODES = {
     'MONERO': {
-        'SERVER': 'http://localhost:9004'
+        'SERVER': 'http://localhost:5000'
     },
     'ETHEREUM': {
         'SERVER': 'http://localhost:8003'

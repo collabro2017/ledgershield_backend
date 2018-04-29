@@ -29,7 +29,7 @@ class Utils:
         elif coin_name == 'xrp':
             return address.XRP()
         elif coin_name == 'xmr':
-            return None
+            return address.XMR()
 
         return account_name, None, None
 
@@ -53,7 +53,7 @@ class Utils:
     @staticmethod
     def get_confirmation(tx):
         coin_name = tx.deposit.symbol.lower()
-        confirmation = Confirmation(tx.deposit_tx_hash, tx.destination_tag)
+        confirmation = Confirmation(tx)
         if coin_name == 'btc':
             return confirmation.BTC()
         elif coin_name == 'eth':
@@ -105,7 +105,14 @@ class Utils:
 
         return None
 
-
+    @staticmethod
+    def get_refund_outputs(tx_outs):
+        outs = []
+        for out in tx_outs:
+            o = dict(out)
+            if not o['tx_hash']:
+                outs.append(o)
+        return outs
 
     @staticmethod
     def get_account_name(src, dst):
@@ -118,107 +125,9 @@ class Utils:
             return data
         return None
 
-
-
-
-    @staticmethod
-    def get_wallet_transaction(tx):
-        address = tx.wallet_address
-        logger = logging.getLogger(__name__)
-        coin_name = tx.deposit.symbol.lower()
-        if coin_name == 'btc':
-            status, data = Bitcoin().getTxByAddress(address)
-            if status == 200:
-                logger.info('{}'.format(data))
-                if len(data) == 0:
-                    return None, True
-                hash, amount = Bitcoin.normalize_tx(data, address)
-                return {'hash': hash, 'amount': amount}, False
-            else:
-                return None, True
-        elif coin_name == 'eth':
-            status, response = Ethereum().getDepositAmount(address)
-
-            if status == 200:
-                # TODO :: Need to find a way to get the transaction hash of ethereum deposit.
-                if response['balance'] <= 0:
-                    return None, True
-
-                return {'hash': '--NONE--', 'amount': response['balance']}, False
-            return None, True
-
-        elif coin_name == 'bch':
-            status, response = BitcoinCash().get_balance_by_address(address, 0)
-            logger.info('{} {}'.format(status, response))
-            if status == 200:
-                if response['balance'] <= 0:
-                    return None, True
-                return {'hash': '--NONE--', 'amount': response['balance']}, False
-
-        elif coin_name == 'xrp':
-            status, response = Ripple().get_balance_by_dt(tx.destination_tag)
-            if status == 200:
-                balance = float(response['balance'])
-                tx_hash = response['hash']
-                logger.info("Balance {} Hash {}".format(balance, tx_hash))
-                if balance <= 0:
-                    return None, True
-                return {'hash': tx_hash, 'amount': balance}, False
-            else:
-                return None, True
-        elif coin_name == 'xmr':
-            status, response = Monero().get_deposit_amount(tx.destination_tag)
-            if status == 200:
-                if 'tx_amount' in response and 'tx_hash' in response:
-                    tx_amount = float(response['tx_amount'])
-                    tx_hash = response['tx_hash']
-                    return {'hash': tx_hash, 'amount': tx_amount}
-            return None, True
-
-        else:
-            logger.warning("{} is not supported yet!".format(coin_name))
-
-        return None, False
-
-    @staticmethod
-    def get_wallet_tx_detail(tx, coin):
-        logger = logging.getLogger('Wallet')
-        coin_name = coin.symbol.lower()
-        tx_hash = tx.deposit_tx_hash
-        if coin_name == 'btc':
-            st, data = Bitcoin().getWalletTxDetail(tx_hash)
-            if st == 200:
-                return data
-            return None
-        elif coin_name == 'eth':
-            # TODO :: Need to get confirmations from the ethereum node.
-            return {'confirmations': 6}
-        elif coin_name == 'bch':
-            st, data = BitcoinCash().get_balance_by_address(address=tx.wallet_address, confirmations=6)
-            if st == 200:
-                if data['balance'] <= 0:
-                    return None
-                return {'confirmations': 6}
-            return None
-        elif coin_name == 'xrp':
-            st, data = Ripple().get_tx_detail(tx_hash)
-            if st == 200:
-                if 'outcome' in data:
-                    # tx = Transaction.objects.get(deposit_tx_hash=tx_hash, deposit__symbol= coin)
-                    amount = float(data['outcome']['deliveredAmount']['value'])
-                    logger.info('{} {}'.format(tx.deposit_tx_amount, amount))
-                    if tx.deposit_tx_amount == amount:
-                        return {'confirmations': 6}
-            return None
-        elif coin_name == 'xmr':
-            st, data = Monero().get_tx_detal(tx.deposit_tx_hash)
-            if st == 200:
-                return {'confirmations': data['confirmations']}
-            return None
-
     @staticmethod
     def get_deposit_amount(outs, address):
-        amount = 0;
+        amount = 0
         for out in outs:
             if out['address'] == address:
                 amount = out['value']
@@ -240,13 +149,105 @@ class Utils:
 
 
 
-    @staticmethod
-    def get_refund_outputs(tx_outs):
-        outs = []
-        for out in tx_outs:
-            o = dict(out)
-            if not o['tx_hash']:
-                outs.append(o)
-        return outs
-
-
+    # @staticmethod
+    # def get_wallet_transaction(tx):
+    #     address = tx.wallet_address
+    #     logger = logging.getLogger(__name__)
+    #     coin_name = tx.deposit.symbol.lower()
+    #     if coin_name == 'btc':
+    #         status, data = Bitcoin().getTxByAddress(address)
+    #         if status == 200:
+    #             logger.info('{}'.format(data))
+    #             if len(data) == 0:
+    #                 return None, True
+    #             hash, amount = Bitcoin.normalize_tx(data, address)
+    #             return {'hash': hash, 'amount': amount}, False
+    #         else:
+    #             return None, True
+    #     elif coin_name == 'eth':
+    #         status, response = Ethereum().getDepositAmount(address)
+    #
+    #         if status == 200:
+    #             # TODO :: Need to find a way to get the transaction hash of ethereum deposit.
+    #             if response['balance'] <= 0:
+    #                 return None, True
+    #
+    #             return {'hash': '--NONE--', 'amount': response['balance']}, False
+    #         return None, True
+    #
+    #     elif coin_name == 'bch':
+    #         status, response = BitcoinCash().get_balance_by_address(address, 0)
+    #         logger.info('{} {}'.format(status, response))
+    #         if status == 200:
+    #             if response['balance'] <= 0:
+    #                 return None, True
+    #             return {'hash': '--NONE--', 'amount': response['balance']}, False
+    #
+    #     elif coin_name == 'xrp':
+    #         status, response = Ripple().get_balance_by_dt(tx.destination_tag)
+    #         if status == 200:
+    #             balance = float(response['balance'])
+    #             tx_hash = response['hash']
+    #             logger.info("Balance {} Hash {}".format(balance, tx_hash))
+    #             if balance <= 0:
+    #                 return None, True
+    #             return {'hash': tx_hash, 'amount': balance}, False
+    #         else:
+    #             return None, True
+    #     elif coin_name == 'xmr':
+    #         status, response = Monero().get_deposit_amount(tx.destination_tag)
+    #         if status == 200:
+    #             if 'tx_amount' in response and 'tx_hash' in response:
+    #                 tx_amount = float(response['tx_amount'])
+    #                 tx_hash = response['tx_hash']
+    #                 return {'hash': tx_hash, 'amount': tx_amount}
+    #         return None, True
+    #
+    #     else:
+    #         logger.warning("{} is not supported yet!".format(coin_name))
+    #
+    #     return None, False
+    #
+    # @staticmethod
+    # def get_wallet_tx_detail(tx, coin):
+    #     logger = logging.getLogger('Wallet')
+    #     coin_name = coin.symbol.lower()
+    #     tx_hash = tx.deposit_tx_hash
+    #     if coin_name == 'btc':
+    #         st, data = Bitcoin().getWalletTxDetail(tx_hash)
+    #         if st == 200:
+    #             return data
+    #         return None
+    #     elif coin_name == 'eth':
+    #         # TODO :: Need to get confirmations from the ethereum node.
+    #         return {'confirmations': 6}
+    #     elif coin_name == 'bch':
+    #         st, data = BitcoinCash().get_balance_by_address(address=tx.wallet_address, confirmations=6)
+    #         if st == 200:
+    #             if data['balance'] <= 0:
+    #                 return None
+    #             return {'confirmations': 6}
+    #         return None
+    #     elif coin_name == 'xrp':
+    #         st, data = Ripple().get_tx_detail(tx_hash)
+    #         if st == 200:
+    #             if 'outcome' in data:
+    #                 # tx = Transaction.objects.get(deposit_tx_hash=tx_hash, deposit__symbol= coin)
+    #                 amount = float(data['outcome']['deliveredAmount']['value'])
+    #                 logger.info('{} {}'.format(tx.deposit_tx_amount, amount))
+    #                 if tx.deposit_tx_amount == amount:
+    #                     return {'confirmations': 6}
+    #         return None
+    #     elif coin_name == 'xmr':
+    #         st, data = Monero().get_tx_detal(tx.deposit_tx_hash)
+    #         if st == 200:
+    #             return {'confirmations': data['confirmations']}
+    #         return None
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #

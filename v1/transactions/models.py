@@ -25,7 +25,7 @@ class Transaction(TimedModel):
     order_id = models.UUIDField(default=uuid.uuid4)
     deposit = models.ForeignKey(Coin, related_name="deposit_coin", on_delete=models.CASCADE)
     wallet_address = models.CharField(max_length=255, null=True)
-    destination_tag = models.CharField(default=0, null=True, blank=True)
+    destination_tag = models.CharField(default=0, null=True, blank=True, max_length=255)
     rollback_wallet = models.CharField(max_length=255)
     deposit_tx_hash = models.CharField(max_length=255, null=True, blank=True)
     deposit_tx_amount =  models.FloatField(default=0)
