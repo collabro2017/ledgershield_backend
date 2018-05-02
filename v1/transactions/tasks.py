@@ -48,10 +48,9 @@ def wait_for_deposit(txid):
         data, run = Utils.get_deposit(tx)
         logger.info(data)
         if run:
-            logger.info("retry within 5 seconds!")
-            time.sleep(5)
+            logger.info("retry within 30 seconds!")
+            time.sleep(30)
             wait_for_deposit.delay(txid)
-            return
         else:
             logger.info("{} received wallet data!".format(data))
             tx.deposit_tx_hash = data['hash']
@@ -61,7 +60,6 @@ def wait_for_deposit(txid):
             tx.save()
 
             wait_for_tx_confirmation.delay(txid)
-            return
     else:
         logger.warning("Tx {} at invalid step {}! ".format(txid, tx.status))
 
@@ -87,12 +85,10 @@ def wait_for_tx_confirmation(txid):
                 tx.exchange_rate = exchange_rate
                 tx.deposit_tx_confirmations = deposit_confirmations
                 tx.save()
-                # TODO:: Retry time from configuration specific to coin.
-                time.sleep(60)
+                time.sleep(90)
                 wait_for_tx_confirmation.delay(txid)
         else:
-            # TODO:: Retry time from configuration specific to coin.
-            time.sleep(10)
+            time.sleep(90)
             wait_for_tx_confirmation.delay(tx.pk)
     else:
         logger.warning("Tx {} at invalid step {} ! ".format(txid, tx.status))
@@ -166,9 +162,12 @@ def transfer_exchanged_amount(txid):
             tx.note = note
             tx.save()
         else:
-            tx.status = 'out_order'
-            tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
-            tx.save()
+            # tx.status = 'out_order'
+            # tx.note = 'Something went wrong while transferring your withdrawn amount, please contact to support center to further assistance!';
+            # tx.save()
+            logger.info("Withdrawal failed due to some reason for tx {}, retrying... ".format(txid))
+            time.sleep(180)
+            transfer_exchanged_amount.delay(txid)
     else:
         logger.warning("Tx {} at invalid step {}! ".format(txid, tx.status))
 
