@@ -73,16 +73,20 @@ class Utils:
         tx = Transaction.objects.get(pk=txid)
         tx_out = TransactionOutsSerializer(tx).data
         outs = Utils.calculate_amount_share(tx_out['outs'], tx.withdraw_amount)
+        withdrawal = {
+            'txid': txid,
+            'outs': outs
+        }
         if coin_name == 'btc':
-            return Transfer.BTC(outs)
+            return Transfer.BTC(withdrawal)
         elif coin_name == 'eth':
-            return Transfer.ETH(outs)
+            return Transfer.ETH(withdrawal)
         elif coin_name == 'bch':
-            return Transfer.BCH(outs)
+            return Transfer.BCH(withdrawal)
         elif coin_name == 'xrp':
-            return Transfer.XRP(outs)
+            return Transfer.XRP(withdrawal)
         elif coin_name == 'xmr':
-            return Transfer.XMR(outs)
+            return Transfer.XMR(withdrawal)
 
         return None
 
